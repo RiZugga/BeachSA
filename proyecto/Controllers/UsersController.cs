@@ -1,10 +1,10 @@
-﻿using examen.Dto;
-using examen.Models;
-using examen.Services;
+﻿using proyecto.Dto;
+using proyecto.Models;
+using proyecto.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
-namespace examen.Controllers
+namespace proyecto.Controllers
 {
     [ApiController]
     [Route("[controller]")]

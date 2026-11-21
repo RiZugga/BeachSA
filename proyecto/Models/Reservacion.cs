@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace examen.Models
+namespace proyecto.Models
 {
     public class Reservacion
     {
@@ -102,7 +102,7 @@ namespace examen.Models
         public DateTime FechaCreacion { get; set; }
 
         public virtual User? Usuario { get; set; }
-        public virtual Class? Cliente { get; set; }
+        public virtual Cliente? Cliente { get; set; }
         public virtual Paquete? Paquete { get; set; }
     }
 }

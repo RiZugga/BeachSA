@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace examen.Models
+namespace proyecto.Models
 {
     public class Paquete
     {

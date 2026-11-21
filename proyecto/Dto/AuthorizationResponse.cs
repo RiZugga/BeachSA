@@ -1,4 +1,4 @@
-﻿namespace examen.Dto
+﻿namespace proyecto.Dto
 {
     public class AuthorizationResponse
     {

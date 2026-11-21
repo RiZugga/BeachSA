@@ -1,7 +1,7 @@
-﻿using examen.Dto;
-using examen.Models;
+﻿using proyecto.Dto;
+using proyecto.Models;
 
-namespace examen.Services
+namespace proyecto.Services
 {
     public interface IAuthorizationServices
     {

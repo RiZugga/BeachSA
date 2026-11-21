@@ -1,11 +1,11 @@
-﻿using examen.Dto;
-using examen.Models;
+﻿using proyecto.Dto;
+using proyecto.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace examen.Services
+namespace proyecto.Services
 {
     public class AuthorizationServices : IAuthorizationServices
     {
@@ -20,7 +20,7 @@ namespace examen.Services
 
         public AuthorizationResponse DevolverToken(User authorization)
         {
-            User temp = this.dbContext.Users.FirstOrDefault(x => x.Email.Equals(authorization.Email) && x.Password.Equals(authorization.Password));
+            User temp = this.dbContext.Users.FirstOrDefault(x => x.Email.Equals(authorization.Email) && x.PasswordHash.Equals(authorization.PasswordHash));
 
             string token = "";
 
