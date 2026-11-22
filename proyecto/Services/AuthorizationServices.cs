@@ -18,9 +18,9 @@ namespace proyecto.Services
             this.configuration = pConfig;
         }
 
-        public AuthorizationResponse DevolverToken(User authorization)
+        public AuthorizationResponse DevolverToken(Usuario authorization)
         {
-            User temp = this.dbContext.Users.FirstOrDefault(x => x.Email.Equals(authorization.Email) && x.PasswordHash.Equals(authorization.PasswordHash));
+            Usuario temp = this.dbContext.Usuarios.FirstOrDefault(x => x.Email.Equals(authorization.Email) && x.PasswordHash.Equals(authorization.PasswordHash));
 
             string token = "";
 

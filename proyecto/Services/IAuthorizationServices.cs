@@ -5,6 +5,6 @@ namespace proyecto.Services
 {
     public interface IAuthorizationServices
     {
-        AuthorizationResponse DevolverToken(User authorization);
+        AuthorizationResponse DevolverToken(Usuario authorization);
     }
 }
