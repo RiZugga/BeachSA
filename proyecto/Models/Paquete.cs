@@ -10,9 +10,9 @@ namespace proyecto.Models
 
         public string Nombre { get; set; }
 
-        public double PrecioPersonaNoche { get; set; }
+        public decimal PrecioPersonaNoche { get; set; }
 
-        public double PorcentajePrima { get; set; }
+        public decimal PorcentajePrima { get; set; }
 
         public int CantidadMensualidades { get; set; }
 
