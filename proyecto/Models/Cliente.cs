@@ -25,7 +25,7 @@ namespace proyecto.Models
         public bool Activo { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime FechaCreación { get; set; }
+        public DateTime FechaCreacion { get; set; }
 
     }
 }
