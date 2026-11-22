@@ -76,20 +76,10 @@ namespace proyecto.Controllers
                 // Parse del JSON de GoMeta
                 using var document = await JsonDocument.ParseAsync(stream);
 
-                if (document.RootElement.ValueKind != JsonValueKind.Object)
-                {
-                    logger.LogWarning("GoMeta devolvió una respuesta con formato inesperado");
-                    return StatusCode(StatusCodes.Status502BadGateway, "GoMeta devolvió una respuesta inválida.");
-                }
 
                 if (!document.RootElement.TryGetProperty("nombre", out var nombre))
                     return NotFound("GoMeta no encontró un nombre para la cédula.");
 
-                if (nombre.ValueKind != JsonValueKind.String && nombre.ValueKind != JsonValueKind.Null)
-                {
-                    logger.LogWarning("GoMeta devolvió un nombre con formato inesperado");
-                    return StatusCode(StatusCodes.Status502BadGateway, "GoMeta devolvió una respuesta inválida.");
-                }
 
                 var nombreCompleto = nombre.GetString();
                 
