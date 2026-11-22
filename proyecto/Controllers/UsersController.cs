@@ -3,11 +3,13 @@ using proyecto.Models;
 using proyecto.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace proyecto.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize(Policy = FuncionesSistema.Usuarios)]
     public class UsersController : ControllerBase
     {
         private readonly DbContextBank context = null;

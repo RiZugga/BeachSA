@@ -75,9 +75,17 @@ builder.Services.AddAuthentication(config =>
 builder.Services.AddAuthorization(options =>
 {
     // Por defecto, todo endpoint exige JWT; el login usa [AllowAnonymous]
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
+    //options.FallbackPolicy = new AuthorizationPolicyBuilder()
+     //   .RequireAuthenticatedUser()
+     //   .Build();
+
+    // Una política por función: se usa con [Authorize(Policy = FuncionesSistema.Clientes)]
+    foreach (var funcion in FuncionesSistema.Todas)
+    {
+        options.AddPolicy(funcion.Codigo, policy =>
+            policy.RequireAssertion(context =>
+                FuncionesSistema.RolTieneFuncion(FuncionesSistema.ObtenerRol(context.User), funcion.Codigo)));
+    }
 });
 
 Console.WriteLine(
