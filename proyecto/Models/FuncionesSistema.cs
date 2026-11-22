@@ -61,5 +61,15 @@ namespace proyecto.Models
         {
             return usuario.FindFirstValue(ClaimTypes.Role);
         }
+
+        public static string? NormalizarRol(string? rol)
+        {
+            if (!RolExiste(rol))
+            {
+                return null;
+            }
+
+            return FuncionesPorRol.Keys.First(k => string.Equals(k, rol, StringComparison.OrdinalIgnoreCase));
+        }
     }
 }
