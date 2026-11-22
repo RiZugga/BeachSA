@@ -48,6 +48,9 @@ builder.Services.AddDbContext<DbContextBank>(
 builder.Services.AddScoped<IAuthorizationServices, AuthorizationServices>();
 builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditoriaServices, AuditoriaServices>();
+
 var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
 var keyBytes = Encoding.UTF8.GetBytes(key);
 
@@ -68,6 +71,26 @@ builder.Services.AddAuthentication(config =>
         ValidateAudience = false,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
+    };
+
+    config.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();   // evita la respuesta vacía por defecto
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+            string mensaje = context.AuthenticateFailure is SecurityTokenExpiredException
+                ? "El token ha expirado. Inicie sesión nuevamente."
+                : "No autenticado. Debe enviar un token válido.";
+
+            await context.Response.WriteAsJsonAsync(new { Result = false, Msj = mensaje });
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new { Result = false, Msj = "No tiene permisos para realizar esta acción." });
+        }
     };
 
 });

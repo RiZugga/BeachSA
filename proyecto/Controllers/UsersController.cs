@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using proyecto.Dto;
 using proyecto.Models;
+using proyecto.Services;
 using System.Security.Claims;
 
 namespace proyecto.Controllers
@@ -15,11 +16,13 @@ namespace proyecto.Controllers
     {
         private readonly DbContextBank dbContext;
         private readonly IPasswordHasher<Usuario> passwordHasher;
+        private readonly IAuditoriaServices auditoria;
 
-        public UsersController(DbContextBank pContext, IPasswordHasher<Usuario> pHasher)
+        public UsersController(DbContextBank pContext, IPasswordHasher<Usuario> pHasher, IAuditoriaServices pAuditoria)
         {
             this.dbContext = pContext;
             this.passwordHasher = pHasher;
+            this.auditoria = pAuditoria;
         }
 
         // GET api/Users
@@ -100,6 +103,9 @@ namespace proyecto.Controllers
             this.dbContext.Usuarios.Add(usuario);
             await this.dbContext.SaveChangesAsync();
 
+            await this.auditoria.RegistrarAsync(AccionesAuditoria.Crear, "User", usuario.Id.ToString(),
+            $"Usuario '{usuario.NombreUsuario}' creado con rol {usuario.Rol}.");
+
             return CreatedAtAction(nameof(Buscar), new { id = usuario.Id }, Mapear(usuario));
         }
 
@@ -140,6 +146,10 @@ namespace proyecto.Controllers
 
             await this.dbContext.SaveChangesAsync();
 
+            await this.auditoria.RegistrarAsync(AccionesAuditoria.Modificar, "User", usuario.Id.ToString(),
+            $"Usuario '{usuario.NombreUsuario}' modificado (activo: {usuario.Activo})."
+            + (string.IsNullOrWhiteSpace(dto.Password) ? "" : " Contraseña actualizada."));
+
             return Ok(Mapear(usuario));
         }
 
@@ -165,8 +175,12 @@ namespace proyecto.Controllers
                 return NotFound(new { Msj = "Usuario no encontrado." });
             }
 
+            string rolAnterior = usuario.Rol;
             usuario.Rol = rol;
             await this.dbContext.SaveChangesAsync();
+
+            await this.auditoria.RegistrarAsync(AccionesAuditoria.Modificar, "User", usuario.Id.ToString(),
+                $"Rol del usuario '{usuario.NombreUsuario}' cambiado de {rolAnterior} a {rol}.");
 
             return Ok(Mapear(usuario));
         }
@@ -196,6 +210,9 @@ namespace proyecto.Controllers
             {
                 return Conflict(new { Msj = "No se puede eliminar el usuario porque tiene registros asociados. Desactívelo en su lugar." });
             }
+
+            await this.auditoria.RegistrarAsync(AccionesAuditoria.Eliminar, "User", usuario.Id.ToString(),
+            $"Usuario '{usuario.NombreUsuario}' eliminado.");
 
             return NoContent();
         }
