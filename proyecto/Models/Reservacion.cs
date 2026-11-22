@@ -40,34 +40,27 @@ namespace proyecto.Models
         public string? Banco { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
-        [Range(0, double.MaxValue)]
         public decimal PrecioPersonaNoche { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(5,2)")]
         public decimal PorcentajePrima { get; set; }
 
         [Required]
         public int CantidadMensualidades { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue)]
         public decimal Subtotal { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue)]
         public decimal MontoDescuento { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue)]
         public decimal MontoIva { get; set; }
 
         [Required]
-        [Column(TypeName = "decimal(18,2)")]
         [Range(0, double.MaxValue)]
         public decimal TotalUsd { get; set; }
 

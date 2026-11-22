@@ -16,16 +16,16 @@ namespace proyecto.Models
 
         public string NombreCompleto { get; set; }
 
-        public string Teléfono {  get; set; }
+        public string Telefono {  get; set; }
         
-        public string Dirección {  get; set; }
+        public string Direccion {  get; set; }
 
         public string Email { get; set; }
 
         public bool Activo { get; set; }
 
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-        public DateTime FechaCreación { get; set; }
+        public DateTime FechaCreacion { get; set; }
 
     }
 }
