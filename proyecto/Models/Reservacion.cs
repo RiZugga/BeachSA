@@ -101,7 +101,7 @@ namespace proyecto.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime FechaCreacion { get; set; }
 
-        public virtual User? Usuario { get; set; }
+        public virtual Usuario? Usuario { get; set; }
         public virtual Cliente? Cliente { get; set; }
         public virtual Paquete? Paquete { get; set; }
     }

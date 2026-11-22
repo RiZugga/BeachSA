@@ -10,7 +10,7 @@ namespace proyecto.Dto
 
         public DbSet<Cliente> Clientes { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
 
         public DbSet<Reservacion> Reservaciones { get; set; }
 

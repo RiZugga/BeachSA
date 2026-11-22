@@ -19,31 +19,33 @@ namespace proyecto.Controllers
             this.authorizationServices = pServices;
         }
 
-        [HttpPost]
-        [Route("AuthenticationUser")]
-        public IActionResult AuthenticationUser(User temp)
-        {
-            var authorization = authorizationServices.DevolverToken(temp);
-
-            if (authorization.Result = true)
+        /*
+            [HttpPost]
+            [Route("AuthenticationUser")]
+            public IActionResult AuthenticationUser(User temp)
             {
-                return Ok(authorization);
+                var authorization = authorizationServices.DevolverToken(temp);
+
+                if (authorization.Result)
+                {
+                    return Ok(authorization);
+                }
+                else
+                {
+                    return Unauthorized(authorization);
+                }
             }
-            else
+
+            [HttpPost]
+            [Route("RegisterUser")]
+            public IActionResult RegisterUser(User temp)
             {
-                return Unauthorized(authorization);
+                context.Users.Add(temp);
+                context.SaveChanges();
+                return Ok(temp);
             }
-        }
 
-        [HttpPost]
-        [Route("RegisterUser")]
-        public IActionResult RegisterUser(User temp)
-        {
-            context.Users.Add(temp);
-            context.SaveChanges();
-            return Ok(temp);
-        }
-
-       
+           */
     }
+
 }
