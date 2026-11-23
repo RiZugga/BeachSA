@@ -90,6 +90,10 @@ namespace proyecto.Models
 
         public DateTime? FechaCorreo { get; set; }
 
+        //agregado por Caro
+        public bool Activo { get; set; }
+
+
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime FechaCreacion { get; set; }
@@ -97,5 +101,7 @@ namespace proyecto.Models
         public virtual Usuario? Usuario { get; set; }
         public virtual Cliente? Cliente { get; set; }
         public virtual Paquete? Paquete { get; set; }
+
+
     }
 }

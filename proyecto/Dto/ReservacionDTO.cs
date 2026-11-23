@@ -30,5 +30,8 @@ namespace proyecto.Dto
         /// <summary>Obligatorio solo cuando la forma de pago es Cheque.</summary>
         [StringLength(100)]
         public string? Banco { get; set; }
+
+        /// <summary>Indica si la reservación está activa o no.</summary>
+        public bool Activo { get; set; } = true;
     }
 }
