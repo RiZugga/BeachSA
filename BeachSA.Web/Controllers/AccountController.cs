@@ -24,8 +24,6 @@ namespace BeachSA.Web.Controllers
             _configuration = configuration;
         }
 
-        /* INICIO DE SESIÓN */
-
         // Mostrar la pantalla de inicio de sesión
         [HttpGet]
         public IActionResult Login()
@@ -78,8 +76,7 @@ namespace BeachSA.Web.Controllers
                 /* CREACIÓN DE LA SESIÓN DEL USUARIO */
 
                 // Validar que la respuesta tenga un token y una fecha vigente
-                if (string.IsNullOrWhiteSpace(resultado.Token) ||
-                    resultado.ExpiresAtUtc <= DateTime.UtcNow)
+                if (string.IsNullOrWhiteSpace(resultado.Token))
                 {
                     ModelState.AddModelError(
                         string.Empty,
@@ -89,27 +86,16 @@ namespace BeachSA.Web.Controllers
                     return View(model);
                 }
 
+
                 // Crear los datos de identidad del usuario
                 var claims = new List<Claim>
-{
-    new Claim(ClaimTypes.Name, resultado.UserName),
-    new Claim("FullName", resultado.FullName),
-
-    // Guardar el JWT en el ticket protegido de autenticación
-    new Claim("AccessToken", resultado.Token)
-};
-
-                // Agregar los roles asignados al usuario
-                foreach (var rol in resultado.Roles)
                 {
-                    claims.Add(new Claim(ClaimTypes.Role, rol));
-                }
+                     // Guardar el JWT en el ticket protegido de autenticación
+                    new Claim("AccessToken", resultado.Token),
+                    new Claim("Result", resultado.result.ToString()),
+                    new Claim("Message", resultado.msj),
+                };
 
-                // Agregar las opciones de menú autorizadas
-                foreach (var opcion in resultado.Menu)
-                {
-                    claims.Add(new Claim("Menu", System.Text.Json.JsonSerializer.Serialize(opcion)));
-                }
 
                 // Crear la identidad y el usuario autenticado
                 var identity = new ClaimsIdentity(
@@ -119,21 +105,11 @@ namespace BeachSA.Web.Controllers
 
                 var principal = new ClaimsPrincipal(identity);
 
-                // La sesión no debe superar el vencimiento del JWT
-                var expiracion = resultado.ExpiresAtUtc;
-                var limiteCookie = DateTimeOffset.UtcNow.AddMinutes(8);
-
-                if (expiracion > limiteCookie.UtcDateTime)
-                {
-                    expiracion = limiteCookie.UtcDateTime;
-                }
-
                 // Configurar las propiedades de la autenticación
                 var propiedades = new AuthenticationProperties
                 {
                     IsPersistent = false,
                     AllowRefresh = false,
-                    ExpiresUtc = new DateTimeOffset(expiracion, TimeSpan.Zero)
                 };
 
                 // Crear la cookie de autenticación
@@ -145,8 +121,8 @@ namespace BeachSA.Web.Controllers
 
                 // Redirigir al Dashboard
                 return RedirectToAction("Index", "Home");
-
             }
+
             catch (HttpRequestException)
             {
                 // Manejar errores de comunicación con el Backend
@@ -159,16 +135,12 @@ namespace BeachSA.Web.Controllers
             }
         }
 
-        /* ACCESO DENEGADO */
-
         // Mostrar la pantalla de acceso denegado
         [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
         }
-
-        /* CIERRE DE SESIÓN */
 
         // Eliminar la autenticación del usuario
         [HttpPost]
