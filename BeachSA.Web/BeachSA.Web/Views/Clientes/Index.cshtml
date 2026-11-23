@@ -1,0 +1,228 @@
+﻿@model List<BeachSA.Web.ViewModels.ClienteViewModel>
+
+@{
+    ViewData["Title"] = "Gestión de Clientes";
+}
+
+<!-- SECCIÓN PRINCIPAL DE CLIENTES -->
+<section class="container-fluid">
+
+    <!-- ENCABEZADO DE LA PÁGINA -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+        <div>
+            <h1 class="fw-bold mb-1">
+                Gestión de Clientes
+            </h1>
+
+            <p class="text-secondary mb-0">
+                Consulte y administre la información de los clientes.
+            </p>
+        </div>
+
+        <!-- BOTÓN PARA REGISTRAR CLIENTES -->
+        <a asp-controller="Clientes"
+           asp-action="Create"
+           class="btn text-white px-4"
+           style="background-color: var(--beach-turquoise);">
+            + Nuevo Cliente
+        </a>
+
+    </div>
+
+    <!-- MENSAJES TEMPORALES -->
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show"
+             role="alert">
+
+            @TempData["Mensaje"]
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Cerrar">
+            </button>
+
+        </div>
+    }
+
+    <!-- TARJETA DEL LISTADO -->
+    <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-4">
+
+            <!-- BUSCADOR DE CLIENTES -->
+            <div class="row mb-4">
+
+                <div class="col-md-8">
+
+                    <!-- FORMULARIO DE BÚSQUEDA -->
+                    <form asp-controller="Clientes"
+                          asp-action="Index"
+                          method="get">
+
+                        <label for="nombre"
+                               class="form-label fw-semibold">
+                            Buscar Cliente
+                        </label>
+
+                        <div class="input-group">
+
+                            <!-- CAMPO DE BÚSQUEDA -->
+                            <input type="text"
+                                   id="nombre"
+                                   name="nombre"
+                                   value="@ViewBag.NombreBuscado"
+                                   class="form-control"
+                                   placeholder="Buscar por nombre..." />
+
+                            <!-- BOTÓN BUSCAR -->
+                            <button type="submit"
+                                    class="btn text-white"
+                                    style="background-color: var(--beach-turquoise);">
+                                Buscar
+                            </button>
+
+                            <!-- BOTÓN LIMPIAR -->
+                            <a asp-controller="Clientes"
+                               asp-action="Index"
+                               class="btn btn-outline-secondary">
+                                Limpiar
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <!-- TABLA DE CLIENTES -->
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle">
+
+                    <!-- ENCABEZADOS DE LA TABLA -->
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>Cédula</th>
+                            <th>Nombre completo</th>
+                            <th>Teléfono</th>
+                            <th>Correo electrónico</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+
+                    </thead>
+
+                    <!-- CONTENIDO DEL LISTADO -->
+                    <tbody>
+
+                        @if (Model != null && Model.Any())
+                        {
+                            // RECORRER LOS CLIENTES
+                            foreach (var cliente in Model)
+                            {
+                                <tr>
+
+                                    <!-- CÉDULA -->
+                                    <td>@cliente.Cedula</td>
+
+                                    <!-- NOMBRE COMPLETO -->
+                                    <td>@cliente.NombreCompleto</td>
+
+                                    <!-- TELÉFONO -->
+                                    <td>@cliente.Telefono</td>
+
+                                    <!-- CORREO ELECTRÓNICO -->
+                                    <td>@cliente.Email</td>
+
+                                    <!-- ESTADO DEL CLIENTE -->
+                                    <td>
+
+                                        @if (cliente.Activo)
+                                        {
+                                            <span class="badge bg-success">
+                                                Activo
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">
+                                                Inactivo
+                                            </span>
+                                        }
+
+                                    </td>
+
+                                    <!-- ACCIONES DEL CLIENTE -->
+                                    <td>
+
+                                        <div class="d-flex gap-2 flex-wrap">
+
+                                            <!-- CONSULTAR DETALLES -->
+                                            <a asp-controller="Clientes"
+                                               asp-action="Details"
+                                               asp-route-id="@cliente.Id"
+                                               class="btn btn-sm btn-outline-info">
+                                                Detalles
+                                            </a>
+
+                                            <!-- EDITAR CLIENTE -->
+                                            <a asp-controller="Clientes"
+                                               asp-action="Edit"
+                                               asp-route-id="@cliente.Id"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Editar
+                                            </a>
+
+                                            <!-- ELIMINAR CLIENTE -->
+                                            <a asp-controller="Clientes"
+                                               asp-action="Delete"
+                                               asp-route-id="@cliente.Id"
+                                               class="btn btn-sm btn-outline-danger">
+                                                Eliminar
+                                            </a>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <!-- MENSAJE CUANDO NO HAY CLIENTES -->
+                            <tr>
+                                <td colspan="6"
+                                    class="text-center text-secondary py-4">
+                                    No hay clientes para mostrar.
+                                </td>
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- INFORMACIÓN DEL LISTADO -->
+            <div class="mt-3">
+
+                <small class="text-secondary">
+                    Los datos mostrados son de demostración.
+                    El listado real estará disponible cuando se integre la API.
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
