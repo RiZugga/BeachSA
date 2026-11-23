@@ -53,13 +53,10 @@ namespace BeachSA.Web.Services
 
             using var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-            var token = _httpContextAccessor.HttpContext?.User.FindFirst("AccessToken")?.Value;
-
-           
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYmVhY2hzYS5jb20iLCJyb2xlIjoiQWRtaW5pc3RyYWRvciIsIm5iZiI6MTc5NTM5NDA0MCwiZXhwIjoxNzk1Mzk0NTIwLCJpYXQiOjE3OTUzOTQwNDB9.Lbuc_FQFWShgcl_Ez0A8_T4s7Up3W1e3bXQFnPQMYo0";
-            }
+            // Lee el token real de la sesión iniciada (Claim o Session)
+            var httpContext = _httpContextAccessor.HttpContext;
+            var token = httpContext?.User.FindFirst("AccessToken")?.Value
+                        ?? httpContext?.Session.GetString("AccessToken");
 
             if (!string.IsNullOrWhiteSpace(token))
             {

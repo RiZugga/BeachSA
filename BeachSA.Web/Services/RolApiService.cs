@@ -19,18 +19,17 @@ namespace BeachSA.Web.Services
         private void AgregarAutorizacion(HttpClient client)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var token = httpContext?.User?.FindFirst("AccessToken")?.Value;
-
-            
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxIiwidW5pcXVlX25hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYmVhY2hzYS5jb20iLCJyb2xlIjoiQWRtaW5pc3RyYWRvciIsIm5iZiI6MTc5NTM4NzI3MiwiZXhwIjoxNzk1Mzg3NzUyLCJpYXQiOjE3OTUzODcyNzJ9.EizcXWaXXeT97hH2kkqbHnB6pkco_oc_RtdcesV5sc8";
-            }
+            var token = httpContext?.User?.FindFirst("AccessToken")?.Value
+                        ?? httpContext?.Session.GetString("AccessToken");
 
             if (!string.IsNullOrWhiteSpace(token))
             {
                 client.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token);
+            }
+            else
+            {
+                client.DefaultRequestHeaders.Authorization = null;
             }
         }
 

@@ -58,16 +58,17 @@
                         <!-- Contraseña -->
                         <div class="mb-4">
 
-                            <label asp-for="PasswordHash"
+                            <label asp-for="Password"
                                    class="form-label">
                             </label>
 
-                            <input asp-for="PasswordHash"
+                            <input asp-for="Password"
                                    class="form-control"
                                    placeholder="Ingrese su contraseña"
                                    autocomplete="current-password" />
 
-                            <span asp-validation-for="PasswordHash"
+                            <span asp-validation-for="Password"
+                                  class="text-danger small">
                                   class="text-danger small">
                             </span>
 
