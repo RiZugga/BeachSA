@@ -7,7 +7,7 @@
         public string Token { get; set; } = string.Empty;
 
         // Fecha y hora de vencimiento del token
-        public DateTime ExpiresAtUtc { get; set; }
+        public DateTime result { get; set; }
 
         // Nombre de usuario
         public string UserName { get; set; } = string.Empty;

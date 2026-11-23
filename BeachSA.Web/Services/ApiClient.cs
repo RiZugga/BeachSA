@@ -25,6 +25,7 @@ namespace BeachSA.Web.Services
             IHttpContextAccessor httpContextAccessor)
         {
             _httpClient = httpClient;
+
             _httpContextAccessor = httpContextAccessor;
         }
 

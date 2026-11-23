@@ -83,7 +83,7 @@ namespace BeachSA.Web.Controllers
 
 
         /* REGISTRO DE CLIENTES */
-
+        
         // Mostrar el formulario de registro
         [HttpGet]
         public IActionResult Create()

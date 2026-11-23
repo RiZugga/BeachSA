@@ -8,7 +8,7 @@ namespace BeachSA.Web.ViewModels
         // Nombre de usuario
         [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
         [Display(Name = "Nombre de usuario")]
-        public string UserName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
 
         // Contraseña
         [Required(ErrorMessage = "La contraseña es obligatoria.")]
