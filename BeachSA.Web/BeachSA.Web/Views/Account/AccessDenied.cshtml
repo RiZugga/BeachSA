@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "Acceso Denegado";
+}
+
+<!-- Sección de Acceso Denegado -->
+<section class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-6">
+
+            <!-- Tarjeta Informativa -->
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-5 text-center">
+
+                    <!-- Código de Error -->
+                    <h1 class="display-1 fw-bold mb-3"
+                        style="color: var(--beach-navy);">
+                        403
+                    </h1>
+
+                    <!-- Mensaje Principal -->
+                    <h2 class="fw-bold mb-3">
+                        Acceso denegado
+                    </h2>
+
+                    <p class="text-secondary mb-4">
+                        No tienes los permisos necesarios
+                        para acceder a esta sección del sistema.
+                    </p>
+
+                    <!-- Botón para Regresar al Inicio -->
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="btn text-white px-4 py-2"
+                       style="background-color: var(--beach-turquoise);">
+                        Volver al inicio
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
