@@ -5,10 +5,11 @@ namespace BeachSA.Web.ViewModels
     // Modelo para el formulario de inicio de sesión
     public class LoginViewModel
     {
-        // Nombre de usuario
-        [Required(ErrorMessage = "El nombre de usuario es obligatorio.")]
-        [Display(Name = "Nombre de usuario")]
-        public string UserName { get; set; } = string.Empty;
+        // Correo electrónico
+        [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
+        [EmailAddress(ErrorMessage = "El correo electrónico no es válido.")]
+        [Display(Name = "Correo electrónico")]
+        public string Email { get; set; } = string.Empty;
 
         // Contraseña
         [Required(ErrorMessage = "La contraseña es obligatoria.")]

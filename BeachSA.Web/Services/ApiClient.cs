@@ -11,8 +11,6 @@ namespace BeachSA.Web.Services
     public class ApiClient
     {
 
-        /* Configuración del Cliente HTTP */
-
         // Cliente HTTP utilizado para realizar solicitudes
         private readonly HttpClient _httpClient;
 
@@ -27,9 +25,6 @@ namespace BeachSA.Web.Services
             _httpClient = httpClient;
             _httpContextAccessor = httpContextAccessor;
         }
-
-
-        /* AUTORIZACIÓN MEDIANTE JWT */
 
         // Obtener el token del usuario autenticado
         private string? ObtenerToken()
@@ -68,9 +63,6 @@ namespace BeachSA.Web.Services
             return solicitud;
         }
 
-
-        /* AUTENTICACIÓN */
-
         // Enviar credenciales a la API para iniciar sesión
         public async Task<LoginResponse?> LoginAsync(LoginViewModel model)
         {
@@ -91,8 +83,6 @@ namespace BeachSA.Web.Services
         }
 
 
-        /* CONSULTA DE CLIENTES */
-
         // Obtener todos los clientes desde la API
         public async Task<List<ClienteViewModel>?> ObtenerClientesAsync()
         {
@@ -111,6 +101,25 @@ namespace BeachSA.Web.Services
             // Convertir la respuesta JSON en una lista de clientes
             return await respuesta.Content
                 .ReadFromJsonAsync<List<ClienteViewModel>>();
+        }
+
+        public async Task<List<MenuItemResponse>?> ObtenerMenuAsync()
+        {
+            // Crear una solicitud GET con autenticación
+            using var solicitud = CrearSolicitudAutorizada(
+                HttpMethod.Get,
+                "api/menu"
+            );
+
+            // Enviar la solicitud a la API
+            using var respuesta = await _httpClient.SendAsync(solicitud);
+
+            // Verificar que la respuesta sea correcta
+            respuesta.EnsureSuccessStatusCode();
+
+            // Convertir la respuesta JSON en una lista de opciones de menú
+            return await respuesta.Content
+                .ReadFromJsonAsync<List<MenuItemResponse>>();
         }
 
 
@@ -219,10 +228,7 @@ namespace BeachSA.Web.Services
             // Enviar la solicitud a la API
             return await _httpClient.SendAsync(solicitud);
         }
-
-
-        /* BÚSQUEDA DE CLIENTES POR NOMBRE */
-
+        
         // Buscar clientes utilizando su nombre
         public async Task<List<ClienteViewModel>?> BuscarClientesPorNombreAsync(
             string nombre)

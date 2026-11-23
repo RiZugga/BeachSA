@@ -1,68 +1,42 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BeachSA.Web.ViewModels;
-// Activar [Authorize] cuando la API de autenticación esté disponible.
-// Las acciones de clientes deberán requerir una sesión válida.
 using Microsoft.AspNetCore.Authorization;
+using BeachSA.Web.Services;
 
 namespace BeachSA.Web.Controllers
 {
     // Controlador encargado de gestionar las vistas de clientes
     public class ClientesController : Controller
     {
-        /* DATOS TEMPORALES PARA PRUEBAS */
 
-        // Obtener clientes de demostración mientras no existe la API
-        private static List<ClienteViewModel> ObtenerClientesDemo()
+        private readonly ApiClient _apiClient;
+
+        private readonly IConfiguration _configuration;
+
+        private readonly string _baseUrl;
+
+        public ClientesController(ApiClient apiClient, IConfiguration configuration)
         {
-            return new List<ClienteViewModel>
-            {
-                new ClienteViewModel
-                {
-                    Id = 1,
-                    Cedula = "123456789",
-                    TipoCedula = "Nacional",
-                    NombreCompleto = "María Rodríguez",
-                    Telefono = "88888888",
-                    Email = "maria@ejemplo.com",
-                    Direccion = "San José, Costa Rica",
-                    Activo = true
-                },
-
-                new ClienteViewModel
-                {
-                    Id = 2,
-                    Cedula = "987654321",
-                    TipoCedula = "Nacional",
-                    NombreCompleto = "Juan Pérez",
-                    Telefono = "87777777",
-                    Email = "juan@ejemplo.com",
-                    Direccion = "Alajuela, Costa Rica",
-                    Activo = true
-                },
-
-                new ClienteViewModel
-                {
-                    Id = 3,
-                    Cedula = "456789123",
-                    TipoCedula = "Nacional",
-                    NombreCompleto = "María Fernández",
-                    Telefono = "86666666",
-                    Email = "mariaf@ejemplo.com",
-                    Direccion = "Heredia, Costa Rica",
-                    Activo = false
-                }
-            };
+            _apiClient = apiClient;
+            _configuration = configuration;
+            _baseUrl = _configuration["ApiSettings:BaseUrl"];
         }
 
 
         /* LISTADO Y BÚSQUEDA DE CLIENTES */
 
         // Mostrar y filtrar clientes por nombre
+        [Authorize]
         [HttpGet]
-        public IActionResult Index(string? nombre)
+        public async Task<IActionResult> Index(string? nombre)
         {
-            // Obtener los clientes temporales
-            var clientes = ObtenerClientesDemo();
+
+            // Obtener los clientes desde la API
+            var clientes = await _apiClient.ObtenerClientesAsync();
+            if (clientes == null)
+            {
+                clientes = new List<ClienteViewModel>();
+            }
 
             // Aplicar el filtro si se indicó un nombre
             if (!string.IsNullOrWhiteSpace(nombre))
@@ -80,9 +54,6 @@ namespace BeachSA.Web.Controllers
             // Enviar los clientes a la vista
             return View(clientes);
         }
-
-
-        /* REGISTRO DE CLIENTES */
 
         // Mostrar el formulario de registro
         [HttpGet]
@@ -102,21 +73,13 @@ namespace BeachSA.Web.Controllers
                 return View(model);
             }
 
-            // Registro pendiente de integración con la API
-            ModelState.AddModelError(
-                string.Empty,
-                "El formulario es válido, pero el registro estará disponible cuando se integre la API. Bad Mine dijeron por ahí"
-            );
-
             return View(model);
         }
 
 
-        /* CONSULTA DE DETALLES DEL CLIENTE */
-
         // Mostrar la información de un cliente específico
         [HttpGet]
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             // Validar el identificador
             if (id <= 0)
@@ -125,7 +88,9 @@ namespace BeachSA.Web.Controllers
             }
 
             // Buscar al cliente en los datos de demostración
-            var cliente = ObtenerClientesDemo()
+            var clientes = await _apiClient.ObtenerClientesAsync();
+            
+            ClienteViewModel cliente = clientes
                 .FirstOrDefault(c => c.Id == id);
 
             // Verificar que exista
@@ -139,11 +104,10 @@ namespace BeachSA.Web.Controllers
         }
 
 
-        /* EDICIÓN DE CLIENTES */
 
         // Mostrar el formulario con los datos del cliente
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             // Validar el identificador
             if (id <= 0)
@@ -152,7 +116,9 @@ namespace BeachSA.Web.Controllers
             }
 
             // Buscar al cliente correspondiente
-            var cliente = ObtenerClientesDemo()
+            var clientes = await _apiClient.ObtenerClientesAsync();
+            
+            ClienteViewModel cliente = clientes
                 .FirstOrDefault(c => c.Id == id);
 
             // Verificar que exista
@@ -183,20 +149,20 @@ namespace BeachSA.Web.Controllers
             }
 
             // Actualización pendiente de integración con la API
+            /*
             ModelState.AddModelError(
                 string.Empty,
                 "Los datos son válidos, pero la actualización estará disponible cuando se integre la API. Mala mía"
             );
+            */
 
             return View(model);
         }
 
 
-        /* ELIMINACIÓN DE CLIENTES */
-
         // Mostrar la pantalla de confirmación
         [HttpGet]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             // Validar el identificador
             if (id <= 0)
@@ -205,7 +171,9 @@ namespace BeachSA.Web.Controllers
             }
 
             // Buscar al cliente correspondiente
-            var cliente = ObtenerClientesDemo()
+            var clientes = await _apiClient.ObtenerClientesAsync();
+            
+            ClienteViewModel cliente = clientes
                 .FirstOrDefault(c => c.Id == id);
 
             // Verificar que exista
@@ -219,10 +187,10 @@ namespace BeachSA.Web.Controllers
         }
 
         // Recibir la confirmación de eliminación
-        [HttpPost]
+        [HttpDelete("{id}")]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Validar el identificador
             if (id <= 0)
@@ -231,7 +199,9 @@ namespace BeachSA.Web.Controllers
             }
 
             // Comprobar que el cliente exista en los datos temporales
-            var cliente = ObtenerClientesDemo()
+            var clientes = await _apiClient.ObtenerClientesAsync();
+
+            ClienteViewModel cliente = clientes
                 .FirstOrDefault(c => c.Id == id);
 
             if (cliente == null)
@@ -239,12 +209,20 @@ namespace BeachSA.Web.Controllers
                 return NotFound();
             }
 
-            // Eliminación pendiente de integración con la API
-            TempData["Mensaje"] =
-                "La eliminación estará disponible cuando se integre la API. Una disculpa querido usuario, pero le tocará esperar";
+            var response = await _apiClient.EliminarClienteAsync(id);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "No se pudo eliminar el cliente."
+                );
+                return View(cliente);
+            }
 
             // Regresar al listado de clientes
             return RedirectToAction(nameof(Index));
         }
+        
     }
 }
