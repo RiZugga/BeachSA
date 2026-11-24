@@ -7,12 +7,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 /* Acceso al Contexto HTTP */
-
 builder.Services.AddHttpContextAccessor();
 
-
 /* Configuración del Servicio para Consumir la API */
-
 builder.Services.AddHttpClient<ApiClient>(client =>
 {
     // Obtener la dirección de la API desde appsettings.json
@@ -25,33 +22,34 @@ builder.Services.AddHttpClient<ApiClient>(client =>
     }
 });
 
+// Si en UsuarioApiService usas _httpClientFactory.CreateClient("BeachApi"), mantén este registro también:
+builder.Services.AddHttpClient("BeachApi", client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+    if (!string.IsNullOrWhiteSpace(baseUrl))
+    {
+        client.BaseAddress = new Uri(baseUrl);
+    }
+});
 
+builder.Services.AddScoped<IUsuarioApiService, UsuarioApiService>();
+builder.Services.AddScoped<IAuditoriaApiService, AuditoriaApiService>();
+builder.Services.AddScoped<RolApiService>();
 
 /* Configuración de Autenticación mediante Cookies */
-
 builder.Services.AddAuthentication(
     CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(config =>
     {
-        // Nombre de la cookie
         config.Cookie.Name = "BeachSA.Auth";
-
-        // Ruta del formulario de inicio de sesión
         config.LoginPath = "/Account/Login";
-
-        // La cookie no puede ser leída por JavaScript
         config.Cookie.HttpOnly = true;
-
-        // Tiempo máximo de autenticación
         config.ExpireTimeSpan = TimeSpan.FromMinutes(8);
-
-        // Ruta para accesos no autorizados por permisos
         config.AccessDeniedPath = "/Account/AccessDenied";
-
-        // No renovar automáticamente la duración
         config.SlidingExpiration = false;
     });
 
+builder.Services.AddSession();
 
 var app = builder.Build();
 
@@ -59,21 +57,20 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 
-
 // Configuración de rutas
 app.UseRouting();
 
-// Habilitar autenticación mediante cookies
+// Autenticación y autorización
+app.UseAuthentication();
 app.UseAuthorization();
 
-// Habilitar autorización de usuarios
-app.UseAuthorization();
+// Sesión (después de UseRouting y UseAuthentication)
+app.UseSession();
 
 app.MapStaticAssets();
 
@@ -81,6 +78,5 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
-
 
 app.Run();

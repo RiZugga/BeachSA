@@ -55,6 +55,9 @@ namespace BeachSA.Web.Controllers
             return View(clientes);
         }
 
+
+        /* REGISTRO DE CLIENTES */
+
         // Mostrar el formulario de registro
         [HttpGet]
         public IActionResult Create()

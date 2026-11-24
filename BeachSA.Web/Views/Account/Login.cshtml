@@ -46,7 +46,7 @@
 
                             <input asp-for="Email"
                                    class="form-control"
-                                   placeholder="Ingrese su usuario"
+                                   placeholder="Ingrese su correo electrónico"
                                    autocomplete="username" />
 
                             <span asp-validation-for="Email"
@@ -68,6 +68,7 @@
                                    autocomplete="current-password" />
 
                             <span asp-validation-for="Password"
+                                  class="text-danger small">
                                   class="text-danger small">
                             </span>
 
