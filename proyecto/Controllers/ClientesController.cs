@@ -143,7 +143,7 @@ namespace proyecto.Controllers
             return Ok("Cliente creado correctamente.");
         }
 
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<ActionResult<string>> ActualizarClienteAsync(int id, ClientDTO request)
         {
             var cliente = await context.Clientes.FindAsync(id);
