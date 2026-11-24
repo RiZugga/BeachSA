@@ -165,7 +165,7 @@ namespace proyecto.Controllers
             return Ok("Cliente actualizado correctamente.");
         }
 
-        [HttpDelete()]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarClienteAsync(int id)
         {
             var cliente = await context.Clientes.FindAsync(id);

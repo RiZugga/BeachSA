@@ -51,6 +51,19 @@ builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IAuditoriaServices, AuditoriaServices>();
 
+//agregado por Caro
+// Servicios de reservaciones
+builder.Services.AddScoped<IReservacionService, ReservacionService>();
+
+// Servicios de precios
+builder.Services.AddScoped<IPrecioService, PrecioService>();
+
+// Servicios de tipo de cambio
+builder.Services.AddScoped<ITipoCambioService, TipoCambioService>();
+
+//Servicios de correo para reservaciones
+builder.Services.AddScoped<IReservacionCorreoService, ReservacionCorreoService>();
+
 var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
 var keyBytes = Encoding.UTF8.GetBytes(key);
 
@@ -123,6 +136,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+//agregado por Caro
+//eliminar antes de subir a produccion
+app.UseAuthentication();
+app.UseAuthorization();
+//
 
 app.UseHttpsRedirection();
 
