@@ -14,5 +14,9 @@ namespace proyecto.Services
             int reservacionId,
             CancellationToken cancellationToken = default
         );
+
+        Task<List<PagoResponseDTO>> ObtenerHistorialGeneralAsync(
+            CancellationToken cancellationToken = default
+        );
     }
 }

@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using BeachSA.Web.Models;
+﻿using BeachSA.Web.Models;
 using BeachSA.Web.Services;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Authorization;
-using System.Net.Http.Headers;
+using BeachSA.Web.ViewModels;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+
 
 namespace BeachSA.Web.Controllers
 {
-    [Authorize]
     public class ReservacionController : Controller
     {
         // Variables
@@ -135,6 +137,38 @@ namespace BeachSA.Web.Controllers
             return View("Cotizar", modelo);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MandarPDF(int id)
+        {
+            if (id <= 0)
+            {
+                TempData["ErrorMessage"] = "ID de reservación no válido.";
+                return RedirectToAction("Index", "Reservacion");
+            }
+
+            var token = User.FindFirst("AccessToken")?.Value;
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["ErrorMessage"] = "No se encontró el token de autenticación.";
+                return RedirectToAction("Index", "Reservacion");
+            }
+
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"Reservas/EnviarPDF?id={id}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            using var response = await this.client.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] = "No se pudo enviar el PDF de la reservación.";
+                return RedirectToAction("Index", "Reservacion");
+            }
+
+            TempData["MensajeExito"] = "El PDF se envió correctamente al correo del cliente.";
+            return RedirectToAction("Index", "Reservacion");
+        }
+
         // Calcular cotización mediante la API
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -190,6 +224,7 @@ namespace BeachSA.Web.Controllers
             return View("Cotizar", temp);
         }
 
+
         // Confirmar y guardar la reservación
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -201,23 +236,101 @@ namespace BeachSA.Web.Controllers
                 temp.CantidadNoches <= 0 ||
                 string.IsNullOrWhiteSpace(temp.FormaPago))
             {
-                TempData["ErrorMessage"] =
-                    "Los datos de la reservación no son válidos.";
-
+                TempData["ErrorMessage"] = "Los datos de la reservación no son válidos.";
                 return View("Cotizar", temp);
             }
 
             if (!temp.CotizacionCalculada)
             {
+                TempData["ErrorMessage"] = "Primero debe calcular la cotización.";
+                return View("Cotizar", temp);
+            }
+
+            // 1. Obtener el JWT de la cookie de autenticación
+            var token = User.FindFirst("AccessToken")?.Value;
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["ErrorMessage"] = "No se encontró el token de autenticación.";
+                return View("Cotizar", temp);
+            }
+
+            // 2. Obtener el correo del usuario
+            var correo = User.FindFirst(ClaimTypes.Email)?.Value;
+
+            if (string.IsNullOrWhiteSpace(correo))
+            {
                 TempData["ErrorMessage"] =
-                    "Primero debe calcular la cotización.";
+                    "No se encontró el correo del usuario autenticado.";
 
                 return View("Cotizar", temp);
             }
 
+            // 3. Consultar el cliente mediante su correo
+            var respuestaCliente = await client.GetAsync(
+                $"clientes/por-correo?correo={Uri.EscapeDataString(correo)}");
+
+            if (!respuestaCliente.IsSuccessStatusCode)
+            {
+                TempData["ErrorMessage"] =
+                    "No se encontró un cliente asociado al correo del usuario.";
+
+                return View("Cotizar", temp);
+            }
+
+            var contenidoCliente =
+                await respuestaCliente.Content.ReadAsStringAsync();
+
+            var cliente =
+                JsonConvert.DeserializeObject<ClienteViewModel>(contenidoCliente);
+
+            if (cliente == null || cliente.Id <= 0)
+            {
+                TempData["ErrorMessage"] = "No se pudo identificar al cliente.";
+                return View("Cotizar", temp);
+            }
+
+            // 4. Construir los datos para crear la reservación
+            var reservacionDTO = new
+            {
+                ClienteId = cliente.Id,
+                PaqueteId = temp.PaqueteId,
+                CantidadPersonas = temp.CantidadPersonas,
+                CantidadNoches = temp.CantidadNoches,
+                FormaPago = temp.FormaPago,
+                NumeroCheque = temp.NumeroCheque,
+                Banco = temp.Banco,
+                Activo = true
+            };
+
+            // 5. Enviar la reservación a la API con el JWT
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post, "Reservas/Create");
+
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            request.Content = JsonContent.Create(reservacionDTO);
+
+            var respuestaReserva = await client.SendAsync(request);
+
+            // 6. Procesar la respuesta
+            if (respuestaReserva.IsSuccessStatusCode)
+            {
+                TempData["MensajeExito"] =
+                    "¡La reservación se ha registrado correctamente!";
+
+                return View("Cotizar", temp);
+            }
+
+            var error = await respuestaReserva.Content.ReadAsStringAsync();
+
+            TempData["ErrorMessage"] =
+                "No se pudo guardar la reservación: " + error;
 
             return View("Cotizar", temp);
         }
+
 
 
         // Consultar información de una reservación
@@ -341,6 +454,64 @@ namespace BeachSA.Web.Controllers
             }
         }
 
+        [HttpGet]
+        public IActionResult CreatePago(int id)
+        {
+            if (id <= 0)
+            {
+                TempData["MensajeError"] = "El identificador de la reservación no es válido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View("~/Views/PagoReservacion/CreatePago.cshtml",
+                new PagoReservacionViewModel { ReservacionId = id });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreatePago(PagoReservacionViewModel pago)
+        {
+            const string vista = "~/Views/PagoReservacion/CreatePago.cshtml";
+
+            if (!ModelState.IsValid)
+            {
+                return View(vista, pago);
+            }
+
+            try
+            {
+                var token = User.FindFirst("AccessToken")?.Value;
+                if (string.IsNullOrWhiteSpace(token))
+                {
+                    ModelState.AddModelError(string.Empty, "No se encontró el token de autenticación.");
+                    return View(vista, pago);
+                }
+
+                using var request = new HttpRequestMessage(HttpMethod.Post, "Pagos/Aplicar");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                request.Content = JsonContent.Create(pago);
+                using var http = await client.SendAsync(request);
+                if (!http.IsSuccessStatusCode)
+                {
+                    var error = await http.Content.ReadAsStringAsync();
+                    ModelState.AddModelError(string.Empty,
+                        string.IsNullOrWhiteSpace(error)
+                            ? $"No se pudo registrar el pago (HTTP {(int)http.StatusCode})."
+                            : $"No se pudo registrar el pago: {error}");
+                    return View(vista, pago);
+                }
+
+                TempData["MensajeExito"] = "El pago se registró correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (HttpRequestException)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "No fue posible comunicarse con el servicio de pagos.");
+                return View(vista, pago);
+            }
+        }
+
 
         // Consultar reservación antes de cancelarla
         [HttpGet]
@@ -400,62 +571,6 @@ namespace BeachSA.Web.Controllers
 
             return RedirectToAction("Index");
         }
-
-
-        //// Obtener el token de autenticación
-        //private AuthenticationHeaderValue AuthorizationValue()
-        //{
-        //    try
-        //    {
-        //        string varToken = HttpContext.Session.GetString("token");
-
-        //        AuthenticationHeaderValue authentication = null;
-
-        //        if (varToken != null)
-        //        {
-        //            if (varToken.Length > 0)
-        //            {
-        //                authentication = new AuthenticationHeaderValue("Bearer", varToken);
-        //            }
-        //        }
-
-        //        return authentication;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
-
-
-        //// Establecer el token en las solicitudes HTTP
-        //private bool SetToken()
-        //{
-        //    try
-        //    {
-        //        bool result = false;
-
-        //        this.client.DefaultRequestHeaders.Authorization = this.AuthorizationValue();
-
-        //        if (this.client.DefaultRequestHeaders.Authorization == null)
-        //        {
-        //            HttpContext.Session.Clear();
-        //            HttpContext.SignOutAsync();
-
-        //            result = false;
-        //        }
-        //        else
-        //        {
-        //            result = true;
-        //        }
-
-        //        return result;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw;
-        //    }
-        //}
 
     }//Close controller
 }// Close namespace

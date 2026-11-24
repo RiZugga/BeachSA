@@ -59,17 +59,20 @@ namespace proyecto.Services
                     page.Size(PageSizes.A4);
                     page.Margin(40);
 
-                    page.Header()
-                        .Text("COMPROBANTE DE RESERVACIÓN")
-                        .Bold()
-                        .FontSize(20)
-                        .FontColor(Colors.Blue.Darken2);
+                    page.Header().Column(headerColumn =>
+                    {
+                        headerColumn.Item()
+                            .Text("COMPROBANTE DE RESERVACIÓN")
+                            .Bold()
+                            .FontSize(20)
+                            .FontColor(Colors.Blue.Darken2);
 
-                    page.Header()
-                        .Text("Sistema de Reservaciones BeachSA")
-                        .Bold()
-                        .FontSize(16)
-                        .FontColor(Colors.Blue.Darken2);
+                        headerColumn.Item()
+                            .Text("Sistema de Reservaciones BeachSA")
+                            .Bold()
+                            .FontSize(16)
+                            .FontColor(Colors.Blue.Darken2);
+                    });
 
                     page.Content().PaddingVertical(20).Column(column =>
                     {
@@ -247,6 +250,8 @@ namespace proyecto.Services
             // Enviar correo
             using (var smtp = new SmtpClient())
             {
+                smtp.CheckCertificateRevocation = false;
+                
                 await smtp.ConnectAsync(
                     smtpServer,
                     port,

@@ -185,5 +185,28 @@ namespace proyecto.Services
 
             return pagos;
         }
+
+        public async Task<List<PagoResponseDTO>> ObtenerHistorialGeneralAsync(
+            CancellationToken cancellationToken = default)
+        {
+            var pagos = await db.PagosReservacion
+                .OrderBy(p => p.ReservacionId)
+                .ThenBy(p => p.NumeroMensualidad)
+                .Select(p => new PagoResponseDTO
+                {
+                    Id = p.Id,
+                    ReservacionId = p.ReservacionId,
+                    NumeroMensualidad = p.NumeroMensualidad,
+                    Monto = p.Monto,
+                    Moneda = p.Moneda,
+                    TipoCambioAplicado = p.TipoCambioAplicado,
+                    MontoUsd = p.MontoUsd,
+                    FechaPago = p.FechaPago,
+                    UsuarioId = p.UsuarioId
+                })
+                .ToListAsync(cancellationToken);
+
+            return pagos;
+        }
     }
 }

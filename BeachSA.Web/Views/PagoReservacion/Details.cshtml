@@ -1,0 +1,60 @@
+@model BeachSA.Web.Models.PagoReservacion
+
+@{
+    ViewData["Title"] = "Detalles del Pago";
+}
+
+<div class="container py-4" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Detalles del Pago</h2>
+            <small class="text-muted">ID: #@Model.Id</small>
+        </div>
+        <a asp-action="Index" class="btn btn-outline-secondary">Volver</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID Pago</dt>
+                <dd class="col-sm-9">@Model.Id</dd>
+
+                <dt class="col-sm-3">ID Reservación</dt>
+                <dd class="col-sm-9">@Model.ReservacionId</dd>
+
+                <dt class="col-sm-3">ID Usuario</dt>
+                <dd class="col-sm-9">@Model.UsuarioId</dd>
+
+                <dt class="col-sm-3">Número de Mensualidad</dt>
+                <dd class="col-sm-9">@Model.NumeroMensualidad</dd>
+
+                <dt class="col-sm-3">Monto</dt>
+                <dd class="col-sm-9">@Model.Monto.ToString("C")</dd>
+
+                <dt class="col-sm-3">Moneda</dt>
+                <dd class="col-sm-9">@Model.Moneda</dd>
+
+                <dt class="col-sm-3">Tipo de Cambio Aplicado</dt>
+                <dd class="col-sm-9">@Model.TipoCambioAplicado</dd>
+
+                <dt class="col-sm-3">Monto USD</dt>
+                <dd class="col-sm-9">@Model.MontoUsd.ToString("C")</dd>
+
+                <dt class="col-sm-3">Fecha de Pago</dt>
+                <dd class="col-sm-9">@Model.FechaPago.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+            <i class="bi bi-pencil"></i> Editar
+        </a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Eliminar
+        </a>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver
+        </a>
+    </div>
+</div>

@@ -94,6 +94,8 @@ namespace BeachSA.Web.Controllers
                     new Claim("AccessToken", resultado.Token),
                     new Claim("Result", resultado.result.ToString()),
                     new Claim("Message", resultado.msj),
+                    new Claim(ClaimTypes.Name, model.Email.Trim()),
+                    new Claim(ClaimTypes.Email, model.Email.Trim()),
                 };
 
 

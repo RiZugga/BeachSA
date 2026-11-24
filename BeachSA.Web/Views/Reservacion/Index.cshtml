@@ -125,6 +125,24 @@
                                                 Cancelar
                                             </a>
 
+                                            <a asp-controller="PagoReservacion"
+                                               asp-action="Create"
+                                               asp-route-reservacionId="@r.Id"
+                                               class="btn btn-sm btn-outline-success">
+                                                Registrar pago
+                                            </a>
+
+                                            <form asp-action="MandarPDF" 
+                                                  asp-route-id="@r.Id" 
+                                                  method="post" 
+                                                  style="display: inline;">
+                                                <button type="submit" 
+                                                        class="btn btn-sm btn-outline-success"
+                                                        onclick="return confirm('¿Enviar PDF al cliente?');">
+                                                    Enviar PDF
+                                                </button>
+                                            </form>
+
                                         </div>
                                     </td>
                                 </tr>

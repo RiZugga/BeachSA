@@ -1,0 +1,89 @@
+@model IEnumerable<BeachSA.Web.Models.PagoReservacion>
+
+@{
+    ViewData["Title"] = "Pagos de Reservaciones";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-0">Pagos de Reservaciones</h2>
+            <small class="text-muted">Gestión de pagos asociados a reservaciones</small>
+        </div>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Nuevo pago
+        </a>
+    </div>
+
+    @if (ViewBag.SuccessMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @ViewBag.SuccessMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @ViewBag.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (Model?.Any() == true)
+    {
+        <div class="table-responsive">
+            <table class="table table-hover table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID Pago</th>
+                        <th>ID Reservación</th>
+                        <th>Mensualidad</th>
+                        <th>Monto</th>
+                        <th>Moneda</th>
+                        <th>Fecha de Pago</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pago in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@pago.Id</strong>
+                            </td>
+                            <td>@pago.ReservacionId</td>
+                            <td>@pago.NumeroMensualidad</td>
+                            <td>@pago.Monto.ToString("C")</td>
+                            <td>@pago.Moneda</td>
+                            <td>
+                                @pago.FechaPago.ToString("dd/MM/yyyy")
+                            </td>
+                            <td>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a asp-action="Details" asp-route-id="@pago.Id" class="btn btn-info" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center py-5">
+            <h5>No hay pagos registrados</h5>
+            <p class="mb-0">Comienza a registrar pagos para tus reservaciones</p>
+        </div>
+    }
+
+    <div class="mt-4">
+        <a asp-controller="Reservacion" asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a Reservaciones
+        </a>
+    </div>
+</div>

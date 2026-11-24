@@ -1,5 +1,4 @@
-﻿
-@model BeachSA.Web.Models.CotizacionViewModel
+﻿@model BeachSA.Web.Models.CotizacionViewModel
 
 @{
     ViewData["Title"] = "Cotización";
@@ -21,6 +20,16 @@
         </div>
     }
 
+    @if (TempData["MensajeExito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["MensajeExito"]
+            <button type="button" class="btn-close"
+                    data-bs-dismiss="alert" aria-label="Cerrar">
+            </button>
+        </div>
+    }
+
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-body p-4">
 
@@ -29,6 +38,7 @@
             <h4 class="fw-bold">@Model.PaqueteNombre</h4>
 
             <div class="row mt-3">
+
                 <div class="col-md-6">
                     <span class="text-muted">Cantidad de personas</span>
                     <h5>@Model.CantidadPersonas</h5>
@@ -38,6 +48,7 @@
                     <span class="text-muted">Cantidad de noches</span>
                     <h5>@Model.CantidadNoches</h5>
                 </div>
+
             </div>
 
         </div>
@@ -50,12 +61,15 @@
 
             <form asp-action="CalcularCotizacion" method="post">
 
+                @Html.AntiForgeryToken()
+
                 <input type="hidden" asp-for="PaqueteId" />
                 <input type="hidden" asp-for="PaqueteNombre" />
                 <input type="hidden" asp-for="CantidadPersonas" />
                 <input type="hidden" asp-for="CantidadNoches" />
 
                 <div class="mb-3">
+
                     <label asp-for="FormaPago" class="form-label">
                         Seleccione la forma de pago
                     </label>
@@ -65,6 +79,7 @@
                         <option value="Cheque">Cheque</option>
                         <option value="Tarjeta">Tarjeta</option>
                     </select>
+
                 </div>
 
                 <div id="datosCheque">
@@ -90,8 +105,10 @@
                 <button type="submit"
                         class="btn text-white"
                         style="background-color: var(--beach-turquoise);">
+
                     <i class="bi bi-calculator me-1"></i>
                     Calcular cotización
+
                 </button>
 
             </form>
@@ -102,9 +119,12 @@
     @if (Model.CotizacionCalculada)
     {
         <div class="card border-0 shadow-sm rounded-4">
+
             <div class="card-body p-4">
 
-                <h5 class="fw-semibold mb-4">Resultado de la cotización</h5>
+                <h5 class="fw-semibold mb-4">
+                    Resultado de la cotización
+                </h5>
 
                 <div class="d-flex justify-content-between mb-2">
                     <span>Subtotal</span>
@@ -125,6 +145,7 @@
 
                 <div class="d-flex justify-content-between mb-3">
                     <span class="fw-bold">Total USD</span>
+
                     <h4 class="fw-bold">
                         $@Model.Resultado.TotalUsd.ToString("N2")
                     </h4>
@@ -132,6 +153,7 @@
 
                 <div class="d-flex justify-content-between mb-3">
                     <span>Total en colones</span>
+
                     <strong>
                         ₡@Model.Resultado.TotalColones.ToString("N2")
                     </strong>
@@ -153,17 +175,21 @@
 
                 <div class="d-flex justify-content-between">
                     <span>Mensualidad</span>
+
                     <strong>
                         $@Model.Resultado.MontoMensualidad.ToString("N2")
                     </strong>
                 </div>
 
             </div>
+
         </div>
 
         <div class="mt-4">
 
             <form asp-action="Confirmar" method="post">
+
+                @Html.AntiForgeryToken()
 
                 <input type="hidden" asp-for="PaqueteId" />
                 <input type="hidden" asp-for="PaqueteNombre" />
@@ -172,17 +198,20 @@
                 <input type="hidden" asp-for="FormaPago" />
                 <input type="hidden" asp-for="NumeroCheque" />
                 <input type="hidden" asp-for="Banco" />
+                <input type="hidden" asp-for="CotizacionCalculada" />
 
-                <button type="submit" class="btn text-white"
-                 style="background-color: var(--beach-turquoise);">
+                <button type="submit"
+                        class="btn text-white"
+                        style="background-color: var(--beach-turquoise);">
+
                     Confirmar reservación
+
                 </button>
 
             </form>
 
         </div>
     }
-
 
 </div>
 
@@ -193,16 +222,21 @@
     }
 
     <script>
+
         const formaPago = document.getElementById("FormaPago");
         const datosCheque = document.getElementById("datosCheque");
 
         function mostrarDatosCheque() {
+
             datosCheque.style.display =
                 formaPago.value === "Cheque" ? "block" : "none";
+
         }
 
         formaPago.addEventListener("change", mostrarDatosCheque);
 
         mostrarDatosCheque();
+
     </script>
+
 }
