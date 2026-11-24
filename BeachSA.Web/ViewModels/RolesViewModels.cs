@@ -9,8 +9,8 @@ namespace BeachSA.Web.Models
 
     public class RolDetalleViewModel
     {
-        public string NombreRol { get; set; } = string.Empty;
-        public string Descripcion { get; set; } = string.Empty;
+        public string rol { get; set; } = string.Empty;
+        //public string Descripcion { get; set; } = string.Empty;
         public List<FuncionItemViewModel> Funciones { get; set; } = new();
     }
 

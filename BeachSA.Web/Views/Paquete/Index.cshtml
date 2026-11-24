@@ -1,0 +1,161 @@
+
+@model IEnumerable<BeachSA.Web.Models.Paquete>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+
+    <div>
+        <h1 class="fw-bold mb-1">
+            Gestión de Paquetes
+        </h1>
+
+        <p class="text-secondary mb-0">
+            Consulte y administre la información de los paquetes.
+        </p>
+    </div>
+
+    <a asp-action="Create" asp-controller="Paquete"
+       class="btn text-white px-4"
+       style="background-color: var(--beach-turquoise);">
+        + Nuevo Paquete
+    </a>
+
+</div>
+
+<div class="card border-0 shadow-sm rounded-4">
+
+    <div class="card-body p-4">
+
+        <div class="row mb-4">
+
+            <div class="col-md-8">
+
+                <form asp-controller="Paquete"
+                      asp-action="Index"
+                      method="get">
+
+                    <label for="pName" class="form-label fw-semibold">
+                        Buscar paquete
+                    </label>
+
+                    <div class="input-group">
+
+                        <input type="text"
+                               id="pName"
+                               name="pName"
+                               class="form-control"
+                               placeholder="Buscar por nombre..." />
+
+                        <button type="submit"
+                                class="btn text-white"
+                                style="background-color: var(--beach-turquoise);">
+                            Buscar
+                        </button>
+
+                        <a asp-controller="Paquete" asp-action="Index" class="btn btn-outline-secondary">
+                            Limpiar
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre del paquete</th>
+                        <th>Precio por persona la noche</th>
+                        <th>Prima (%)</th>
+                        <th>Mensualidades</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>@item.Nombre</td>
+
+                                <td>$@item.PrecioPersonaNoche</td>
+
+                                <td>@item.PorcentajePrima</td>
+
+                                <td>@item.CantidadMensualidades</td>
+
+                                <td>
+                                    @if (item.Activo)
+                                    {
+                                        <span class="badge bg-success">
+                                            Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            Inactivo
+                                        </span>
+                                    }
+                                </td>
+
+                                <td>
+                                    <div class="d-flex gap-2 flex-wrap">
+
+                                        <a asp-action="Details" asp-controller="Paquete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">
+                                            Detalles
+                                        </a>
+
+                                        <a asp-action="Edit" asp-controller="Paquete"  asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
+                                            Editar
+                                        </a>
+
+                                        <a asp-action="Delete" asp-controller="Paquete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                            Desactivar
+                                        </a>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6"
+                                class="text-center text-secondary py-4">
+                                No hay paquetes para mostrar.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="mt-3">
+            <small class="text-secondary">
+                Los datos mostrados corresponden al listado de paquetes disponibles en el sistema.
+            </small>
+        </div>
+
+    </div>
+
+</div>

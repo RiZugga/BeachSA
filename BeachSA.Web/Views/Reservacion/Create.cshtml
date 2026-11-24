@@ -1,0 +1,163 @@
+
+@model BeachSA.Web.Models.Reservacion
+
+@{
+    ViewData["Title"] = "Create";
+    var paquete = ViewBag.Paquete as BeachSA.Web.Models.Paquete;
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Realizar Reservación</h2>
+        <p class="text-muted mb-0">
+            Complete los datos para continuar con la cotización de su paquete vacacional.
+        </p>
+    </div>
+
+    @if (paquete == null)
+    {
+        <div class="alert alert-warning">
+            No se encontró el paquete seleccionado.
+            <a asp-controller="Paquete" asp-action="Index">
+                Volver al catálogo
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 mb-4">
+            <div class="card-body p-4">
+
+                <h5 class="fw-semibold mb-3">Paquete seleccionado</h5>
+
+                <div class="row align-items-center">
+
+                    <div class="col-md-8">
+                        <h4 class="fw-bold mb-2">@paquete.Nombre</h4>
+
+                        <p class="text-muted mb-1">
+                            Precio por persona la noche
+                        </p>
+
+                        <h4 class="fw-bold"
+                            style="color: var(--beach-turquoise);">
+                            @paquete.PrecioPersonaNoche.ToString("C2",
+                                System.Globalization.CultureInfo.GetCultureInfo("en-US"))
+                        </h4>
+                    </div>
+
+                    <div class="col-md-4 mt-3 mt-md-0">
+                        <div class="bg-light rounded-3 p-3">
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Prima</span>
+                                <strong>@paquete.PorcentajePrima%</strong>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Mensualidades</span>
+                                <strong>@paquete.CantidadMensualidades</strong>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <form asp-action="Cotizar" method="post">
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger mb-3"></div>
+
+                    <input type="hidden" asp-for="PaqueteId"
+                           value="@paquete.Id" />
+
+                    <h5 class="fw-semibold mb-3">
+                        Detalles de la reservación
+                    </h5>
+
+                    <p class="text-muted small mb-4">
+                        Indique la cantidad de personas y cuántas noches desean hospedarse.
+                    </p>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label asp-for="CantidadPersonas"
+                                   class="form-label">
+                                Cantidad de personas
+                            </label>
+
+                            <input asp-for="CantidadPersonas"
+                                   class="form-control"
+                                   type="number"
+                                   min="1"
+                                   value="1"
+                                   required
+                                    />
+
+                            <span asp-validation-for="CantidadPersonas"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label asp-for="CantidadNoches"
+                                   class="form-label">
+                                Cantidad de noches
+                            </label>
+
+                            <input asp-for="CantidadNoches"
+                                   class="form-control"
+                                   type="number"
+                                   min="1"
+                                   value="1"
+                                   required
+                                    />
+
+                            <span asp-validation-for="CantidadNoches"
+                                  class="text-danger"></span>
+
+                        </div>
+
+                    </div>
+
+                    <hr class="my-4" />
+
+                    <div class="d-flex gap-2 justify-content-end">
+
+                        <a asp-controller="Paquete"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+
+                        <button type="submit"
+                                class="btn text-white"
+                                style="background-color: var(--beach-turquoise);">
+                            Continuar a cotización
+
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,208 @@
+﻿
+@model BeachSA.Web.Models.CotizacionViewModel
+
+@{
+    ViewData["Title"] = "Cotización";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Cotización de reservación</h2>
+        <p class="text-muted mb-0">
+            Revise los detalles y seleccione su forma de pago.
+        </p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+
+            <h5 class="fw-semibold mb-3">Paquete seleccionado</h5>
+
+            <h4 class="fw-bold">@Model.PaqueteNombre</h4>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <span class="text-muted">Cantidad de personas</span>
+                    <h5>@Model.CantidadPersonas</h5>
+                </div>
+
+                <div class="col-md-6">
+                    <span class="text-muted">Cantidad de noches</span>
+                    <h5>@Model.CantidadNoches</h5>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+
+            <h5 class="fw-semibold mb-3">Forma de pago</h5>
+
+            <form asp-action="CalcularCotizacion" method="post">
+
+                <input type="hidden" asp-for="PaqueteId" />
+                <input type="hidden" asp-for="PaqueteNombre" />
+                <input type="hidden" asp-for="CantidadPersonas" />
+                <input type="hidden" asp-for="CantidadNoches" />
+
+                <div class="mb-3">
+                    <label asp-for="FormaPago" class="form-label">
+                        Seleccione la forma de pago
+                    </label>
+
+                    <select asp-for="FormaPago" class="form-select" required>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Tarjeta">Tarjeta</option>
+                    </select>
+                </div>
+
+                <div id="datosCheque">
+
+                    <div class="mb-3">
+                        <label asp-for="NumeroCheque" class="form-label">
+                            Número de cheque
+                        </label>
+
+                        <input asp-for="NumeroCheque" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Banco" class="form-label">
+                            Banco
+                        </label>
+
+                        <input asp-for="Banco" class="form-control" />
+                    </div>
+
+                </div>
+
+                <button type="submit"
+                        class="btn text-white"
+                        style="background-color: var(--beach-turquoise);">
+                    <i class="bi bi-calculator me-1"></i>
+                    Calcular cotización
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    @if (Model.CotizacionCalculada)
+    {
+        <div class="card border-0 shadow-sm rounded-4">
+            <div class="card-body p-4">
+
+                <h5 class="fw-semibold mb-4">Resultado de la cotización</h5>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Subtotal</span>
+                    <strong>$@Model.Resultado.Subtotal.ToString("N2")</strong>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Descuento (@Model.Resultado.PorcentajeDescuento%)</span>
+                    <strong>$@Model.Resultado.MontoDescuento.ToString("N2")</strong>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>IVA (@Model.Resultado.PorcentajeIva%)</span>
+                    <strong>$@Model.Resultado.MontoIva.ToString("N2")</strong>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span class="fw-bold">Total USD</span>
+                    <h4 class="fw-bold">
+                        $@Model.Resultado.TotalUsd.ToString("N2")
+                    </h4>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Total en colones</span>
+                    <strong>
+                        ₡@Model.Resultado.TotalColones.ToString("N2")
+                    </strong>
+                </div>
+
+                <hr />
+
+                <h6 class="fw-semibold mb-3">Financiamiento</h6>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Prima</span>
+                    <strong>$@Model.Resultado.MontoPrima.ToString("N2")</strong>
+                </div>
+
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Saldo</span>
+                    <strong>$@Model.Resultado.Saldo.ToString("N2")</strong>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <span>Mensualidad</span>
+                    <strong>
+                        $@Model.Resultado.MontoMensualidad.ToString("N2")
+                    </strong>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="mt-4">
+
+            <form asp-action="Confirmar" method="post">
+
+                <input type="hidden" asp-for="PaqueteId" />
+                <input type="hidden" asp-for="PaqueteNombre" />
+                <input type="hidden" asp-for="CantidadPersonas" />
+                <input type="hidden" asp-for="CantidadNoches" />
+                <input type="hidden" asp-for="FormaPago" />
+                <input type="hidden" asp-for="NumeroCheque" />
+                <input type="hidden" asp-for="Banco" />
+
+                <button type="submit" class="btn text-white"
+                 style="background-color: var(--beach-turquoise);">
+                    Confirmar reservación
+                </button>
+
+            </form>
+
+        </div>
+    }
+
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        const formaPago = document.getElementById("FormaPago");
+        const datosCheque = document.getElementById("datosCheque");
+
+        function mostrarDatosCheque() {
+            datosCheque.style.display =
+                formaPago.value === "Cheque" ? "block" : "none";
+        }
+
+        formaPago.addEventListener("change", mostrarDatosCheque);
+
+        mostrarDatosCheque();
+    </script>
+}

@@ -51,8 +51,8 @@ namespace BeachSA.Web.Controllers
 
                 vm.Roles.Add(new RolDetalleViewModel
                 {
-                    NombreRol = rol.Nombre,
-                    Descripcion = rol.Descripcion,
+                    rol = rol.Nombre,
+                    //Descripcion = rol.Descripcion,
                     Funciones = funcionesRol
                 });
             }

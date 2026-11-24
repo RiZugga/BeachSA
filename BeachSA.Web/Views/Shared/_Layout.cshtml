@@ -1,6 +1,36 @@
 ﻿@using System.Text.Json
 @using BeachSA.Web.Models
 
+@{
+    // Obtener el menú autorizado desde la autenticación
+    var menuJson = User.FindFirst("Menu")?.Value;
+
+    // Preparar las opciones del menú para cuando exista la API
+    var opcionesMenu = new List<MenuItemResponse>();
+
+    if (!string.IsNullOrWhiteSpace(menuJson))
+    {
+        try
+        {
+            opcionesMenu = JsonSerializer.Deserialize<List<MenuItemResponse>>(
+                menuJson,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            ) ?? new List<MenuItemResponse>();
+        }
+        catch (JsonException)
+        {
+            // Si el formato no es válido, dejar la lista vacía
+            opcionesMenu = new List<MenuItemResponse>();
+        }
+    }
+
+    // Temporal: mostrar todas las opciones durante el desarrollo.
+    // Cuando exista la API, se utilizará opcionesMenu.
+}
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -94,6 +124,7 @@
 
 <body class="d-flex flex-column min-vh-100">
 
+    <!-- BARRA DE NAVEGACIÓN PRINCIPAL -->
     <header>
 
         <nav class="navbar navbar-expand-lg navbar-dark shadow-sm"
@@ -101,6 +132,7 @@
 
             <div class="container-fluid px-4">
 
+                <!-- LOGO DE BEACH S.A. -->
                 <a class="navbar-brand d-flex align-items-center"
                    asp-controller="Home"
                    asp-action="Index">
@@ -157,7 +189,7 @@
                         <!-- PAQUETES -->
                         <li class="nav-item">
                             <a class="nav-link"
-                               asp-controller="Paquetes"
+                               asp-controller="Paquete"
                                asp-action="Index">
                                 Paquetes
                             </a>
@@ -166,7 +198,7 @@
                         <!-- RESERVACIONES -->
                         <li class="nav-item">
                             <a class="nav-link"
-                               asp-controller="Reservaciones"
+                               asp-controller="Reservacion"
                                asp-action="Index">
                                 Reservaciones
                             </a>
