@@ -17,5 +17,7 @@ namespace proyecto.Dto
         public DbSet<Paquete> Paquetes { get; set; }
 
         public DbSet<RegistroAuditoria> RegistrosAuditoria { get; set; }
+
+        public DbSet<PagoReservacion> PagosReservacion { get; set; }
     }
 }

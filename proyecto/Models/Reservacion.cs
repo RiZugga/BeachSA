@@ -93,6 +93,9 @@ namespace proyecto.Models
         //agregado por Caro
         public bool Activo { get; set; }
 
+        [StringLength(3)]
+        public string? MonedaPago { get; set; }
+
 
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
