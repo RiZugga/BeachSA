@@ -109,6 +109,20 @@ namespace BeachSA.Web.Services
             var client = _httpClientFactory.CreateClient("BeachApi");
             AgregarAutorizacion(client);
 
+            var cedula = Uri.EscapeDataString(model.Cedula?.Trim() ?? "");
+            var cedulaValidation = await client.GetAsync($"api/clientes/existscedula?value={cedula}");
+
+            if (!cedulaValidation.IsSuccessStatusCode)
+            {
+                return (false, await LeerMensajeErrorAsync(cedulaValidation, "No se pudo verificar la cédula"));
+            }
+
+            var exists = await cedulaValidation.Content.ReadFromJsonAsync<bool>();
+            if (exists)
+            {
+                return (false, "La cédula ya está registrada.");
+            }
+
             var payload = new
             {
                 nombreUsuario = model.NombreUsuario.Trim(),
@@ -120,12 +134,31 @@ namespace BeachSA.Web.Services
             };
 
             var response = await client.PostAsJsonAsync("api/Users", payload);
-            if (response.IsSuccessStatusCode)
+            if (!response.IsSuccessStatusCode)
             {
-                return (true, null);
+                return (false, await LeerMensajeErrorAsync(response, "No se pudo registrar el usuario"));
             }
 
-            return (false, await LeerMensajeErrorAsync(response, "No se pudo registrar el usuario"));
+            // Crear datos del cliente si el usuario fue creado exitosamente
+            var payloadClient = new
+            {
+                nombreCompleto = model.NombreCompleto.Trim(),
+                email = model.Email.Trim(),
+                tipoCedula = model.TipoCedula?.Trim(),
+                cedula = model.Cedula?.Trim(),
+                telefono = model.Telefono?.Trim(),
+                direccion = model.Direccion?.Trim(),
+                activo = model.Activo
+            };
+
+            var responseClient = await client.PostAsJsonAsync("api/clientes", payloadClient);
+
+            if (!responseClient.IsSuccessStatusCode)
+            {
+                return (false, await LeerMensajeErrorAsync(responseClient, "Error al registrar los datos del cliente"));
+            }
+
+            return (true, null);
         }
 
         public async Task<(bool Ok, string? Error)> EditarAsync(UsuarioEditViewModel model)

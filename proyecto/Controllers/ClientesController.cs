@@ -39,6 +39,13 @@ namespace proyecto.Controllers
             return Ok(cliente);
         }
 
+        [HttpGet("existscedula")]
+        public async Task<ActionResult<bool>> ExisteCedulaAsync([FromQuery] string value)
+        {
+            var existe = await context.Clientes.AnyAsync(c => c.Cedula == value);
+            return Ok(existe);
+        }
+
         [HttpGet("searchdescrip/{value}")]
         public async Task<ActionResult<List<Cliente>>> BuscarClientesPorNombreAsync(string value)
         {

@@ -51,6 +51,25 @@ namespace BeachSA.Web.ViewModels
         [Display(Name = "Usuario activo")]
         public bool Activo { get; set; } = true;
 
+        public string Cedula { get; set; } = string.Empty;
+
+        // Tipo de identificación
+        [Required(ErrorMessage = "El tipo de cédula es obligatorio.")]
+        [Display(Name = "Tipo de cédula")]
+        public string TipoCedula { get; set; } = string.Empty;
+
+        // Número de teléfono
+        [Required(ErrorMessage = "El teléfono es obligatorio.")]
+        [StringLength(20)]
+        [Display(Name = "Teléfono")]
+        public string Telefono { get; set; } = string.Empty;
+
+        // Dirección del cliente
+        [Required(ErrorMessage = "La dirección es obligatoria.")]
+        [StringLength(250)]
+        [Display(Name = "Dirección")]
+        public string Direccion { get; set; } = string.Empty;
+
         public List<string> RolesDisponibles { get; set; } = new() { "Administrador", "Regular" };
     }
 

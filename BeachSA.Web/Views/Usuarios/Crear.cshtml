@@ -55,6 +55,30 @@
                         <span asp-validation-for="Password" class="text-danger small"></span>
                     </div>
 
+                    <div class="col-md-6">
+                        <label asp-for="Cedula" class="form-label"></label>
+                        <input asp-for="Cedula" type="text" class="form-control" maxlength="20" />
+                        <span asp-validation-for="Cedula" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TipoCedula" class="form-label"></label>
+                        <input asp-for="TipoCedula" type="text" class="form-control" maxlength="20" />
+                        <span asp-validation-for="TipoCedula" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Telefono" class="form-label"></label>
+                        <input asp-for="Telefono" type="text" class="form-control" maxlength="20" />
+                        <span asp-validation-for="Telefono" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Direccion" class="form-label"></label>
+                        <input asp-for="Direccion" type="text" class="form-control" maxlength="250" />
+                        <span asp-validation-for="Direccion" class="text-danger small"></span>
+                    </div>
+
                     <div class="col-12">
                         <div class="form-check">
                             <input asp-for="Activo" class="form-check-input" />
