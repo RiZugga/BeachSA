@@ -1,0 +1,230 @@
+
+@model BeachSA.Web.Models.Reservacion
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="container-fluid">
+
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">Editar Reservación</h2>
+
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <form asp-action="Edit" method="post">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <input type="hidden" asp-for="Id" />
+
+                <h5 class="fw-semibold mb-3">Información general</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ClienteId" class="form-label">Cliente</label>
+                        <input asp-for="ClienteId" class="form-control" type="number" readonly />
+                        <span asp-validation-for="ClienteId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="PaqueteId" class="form-label">Paquete</label>
+                        <input asp-for="PaqueteId" class="form-control" type="number" readonly />
+                        <span asp-validation-for="PaqueteId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="UsuarioId" class="form-label">Usuario responsable</label>
+                        <input asp-for="UsuarioId" class="form-control" type="number" readonly />
+                        <span asp-validation-for="UsuarioId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CantidadPersonas" class="form-label">Cantidad de personas</label>
+                        <input asp-for="CantidadPersonas" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="CantidadPersonas" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="CantidadNoches" class="form-label">Cantidad de noches</label>
+                        <input asp-for="CantidadNoches" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="CantidadNoches" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="fw-semibold mb-3">Información del pago</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FormaPago" class="form-label">Forma de pago</label>
+                        <select asp-for="FormaPago" class="form-select">
+                            <option value="Efectivo">Efectivo</option>
+                            <option value="Tarjeta">Tarjeta</option>
+                            <option value="Transferencia">Transferencia</option>
+                            <option value="Cheque">Cheque</option>
+                        </select>
+                        <span asp-validation-for="FormaPago" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="NumeroCheque" class="form-label">Número de cheque</label>
+                        <input asp-for="NumeroCheque" class="form-control" />
+                        <span asp-validation-for="NumeroCheque" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Banco" class="form-label">Banco</label>
+                        <input asp-for="Banco" class="form-control" />
+                        <span asp-validation-for="Banco" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="fw-semibold mb-3">Información de la cotización</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Precio por persona/noche</label>
+                        <input value="@Model.PrecioPersonaNoche.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Porcentaje de prima</label>
+                        <input value="@Model.PorcentajePrima%" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Cantidad de mensualidades</label>
+                        <input value="@Model.CantidadMensualidades" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Subtotal</label>
+                        <input value="@Model.Subtotal.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Porcentaje de descuento</label>
+                        <input value="@Model.PorcentajeDescuento%" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Monto de descuento</label>
+                        <input value="@Model.MontoDescuento.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Porcentaje de IVA</label>
+                        <input value="@Model.PorcentajeIva%" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Monto de IVA</label>
+                        <input value="@Model.MontoIva.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Total en dólares</label>
+                        <input value="@Model.TotalUsd.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tipo de cambio</label>
+                        <input value="@Model.TipoCambio" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Total en colones</label>
+                        <input value="@Model.TotalColones.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("es-CR"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Monto de prima</label>
+                        <input value="@Model.MontoPrima.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Saldo pendiente</label>
+                        <input value="@Model.Saldo.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Monto de mensualidad</label>
+                        <input value="@Model.MontoMensualidad.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))"
+                               class="form-control" readonly />
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <h5 class="fw-semibold mb-3">Notificación por correo</h5>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Estado del correo</label>
+                        <input value="@(Model.CorreoEnviado ? "Enviado" : "Pendiente")"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha de envío</label>
+                        <input value="@(Model.FechaCorreo?.ToString("dd/MM/yyyy HH:mm") ?? "No enviado")"
+                               class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Fecha de creación</label>
+                        <input value="@Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm")"
+                               class="form-control" readonly />
+                    </div>
+
+                </div>
+
+                <hr class="my-4" />
+
+                <div class="d-flex gap-2 justify-content-end">
+
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        Volver al listado
+                    </a>
+
+                    <button type="submit" class="btn text-white"
+                            style="background-color: var(--beach-turquoise);">
+                        Guardar Cambios
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

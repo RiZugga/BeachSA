@@ -1,0 +1,78 @@
+
+@model BeachSA.Web.Models.Paquete
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1 class="fw-bold mb-1">Detalles del Paquete</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+
+        <dl class="row">
+
+            <dt class="col-sm-5">
+                Nombre del paquete
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt class="col-sm-5">
+                Precio por persona / noche (USD)
+            </dt>
+            <dd class="col-sm-7">
+                @Model.PrecioPersonaNoche.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))
+            </dd>
+
+            <dt class="col-sm-5">
+                Porcentaje de prima
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.PorcentajePrima)%
+            </dd>
+
+            <dt class="col-sm-5">
+                Cantidad de mensualidades
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.CantidadMensualidades)
+            </dd>
+
+            <dt class="col-sm-5">
+                Estado
+            </dt>
+            <dd class="col-sm-7">
+                @if (Model.Activo)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactivo</span>
+                }
+            </dd>
+
+        </dl>
+
+        <div class="d-flex gap-2 flex-wrap mt-4">
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary px-4">
+                Volver a la lista
+            </a>
+
+            <a asp-action="Edit"
+               asp-route-id="@Model.Id"
+               class="btn text-white px-4"
+               style="background-color: var(--beach-turquoise);">
+                Editar Paquete
+            </a>
+
+        </div>
+
+    </div>
+</div>

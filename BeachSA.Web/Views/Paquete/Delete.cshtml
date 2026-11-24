@@ -1,0 +1,88 @@
+@model BeachSA.Web.Models.Paquete
+
+@{
+    ViewData["Title"] = "Desactivar Paquete";
+}
+
+<h1 class="fw-bold mb-1">Desactivar Paquete</h1>
+
+<p class="text-secondary mb-4">
+    Revise la información del paquete antes de confirmar su desactivación.
+</p>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+
+        <dl class="row">
+
+            <dt class="col-sm-5">
+                Nombre del paquete
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+
+            <dt class="col-sm-5">
+                Precio por persona / noche (USD)
+            </dt>
+            <dd class="col-sm-7">
+                @Model.PrecioPersonaNoche.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("en-US"))
+            </dd>
+
+            <dt class="col-sm-5">
+                Porcentaje de prima
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.PorcentajePrima)%
+            </dd>
+
+            <dt class="col-sm-5">
+                Cantidad de mensualidades
+            </dt>
+            <dd class="col-sm-7">
+                @Html.DisplayFor(model => model.CantidadMensualidades)
+            </dd>
+
+            <dt class="col-sm-5">
+                Estado actual
+            </dt>
+            <dd class="col-sm-7">
+                @if (Model.Activo)
+                {
+                    <span class="badge bg-success">Activo</span>
+                }
+                else
+                {
+                    <span class="badge bg-secondary">Inactivo</span>
+                }
+            </dd>
+
+        </dl>
+
+        <div class="alert alert-warning mt-3" role="alert">
+            ¿Está seguro de que desea desactivar este paquete?
+        </div>
+
+        <form asp-action="Delete">
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex gap-2 flex-wrap">
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary px-4">
+                    Cancelar
+                </a>
+
+                <button type="submit" class="btn btn-danger px-4">
+                    Confirmar Desactivación
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
