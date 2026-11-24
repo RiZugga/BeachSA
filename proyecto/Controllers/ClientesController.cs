@@ -172,6 +172,16 @@ namespace proyecto.Controllers
             return Ok("Cliente actualizado correctamente.");
         }
 
+        [HttpGet("por-correo")]
+        public async Task<ActionResult<Cliente>> ObtenerClientePorCorreoAsync([FromQuery] string correo)
+        {
+            var cliente = await context.Clientes.FirstOrDefaultAsync(c => c.Email == correo);
+            if (cliente == null)
+                return NotFound();
+
+            return Ok(cliente);
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarClienteAsync(int id)
         {
