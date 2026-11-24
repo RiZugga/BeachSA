@@ -209,7 +209,6 @@ namespace BeachSA.Web.Services
         }
 
 
-        /* ELIMINACIÓN DE CLIENTES */
 
         // Solicitar la eliminación o desactivación de un cliente
         public async Task<HttpResponseMessage> EliminarClienteAsync(int id)

@@ -6,7 +6,7 @@
         {
             HttpClient client = new HttpClient();
 
-            client.BaseAddress = new Uri("https://localhost:7137/api/");
+            client.BaseAddress = new Uri("http://localhost:5268/api/");
 
             return client;
 
