@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using proyecto.Dto;
+using proyecto.Models;
 using proyecto.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,10 +21,10 @@ namespace proyecto.Controllers
         }
 
         [HttpPost("Aplicar")]
-public async Task<IActionResult> AplicarPago(
+    public async Task<IActionResult> AplicarPago(
     [FromBody] PagoRequestDTO request,
     CancellationToken cancellationToken)
-{
+    {
     try
     {
         string? usuarioClaim =
@@ -88,21 +89,28 @@ public async Task<IActionResult> AplicarPago(
         public async Task<IActionResult> ObtenerHistorialGeneral(
             CancellationToken cancellationToken)
         {
-            try
-            {
-                var historial = await pagoService.ObtenerHistorialGeneralAsync(
-                    cancellationToken
-                );
 
-                return Ok(historial);
-            }
-            catch (Exception)
+            if (User.IsInRole(RolesSistema.Administrador))
             {
-                return StatusCode(500, new
-                {
-                    mensaje = "Ocurrió un error al consultar el historial general."
-                });
+                List<PagoResponseDTO> todas =
+                    await this.pagoService.ObtenerHistorialGeneralAsync(cancellationToken);
+
+                return Ok(todas);
             }
+
+            string? usuarioClaim =
+                User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub");
+
+            if (!int.TryParse(usuarioClaim, out int usuarioId))
+            {
+                return Unauthorized("No se pudo identificar al usuario.");
+            }
+
+            List<PagoResponseDTO> reservacionList =
+                await this.pagoService.ObtenerHistorialPorUsuarioAsync(usuarioId, cancellationToken);
+
+            return Ok(reservacionList);
         }
 
 

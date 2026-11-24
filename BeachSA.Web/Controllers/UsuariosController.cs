@@ -15,6 +15,11 @@ namespace BeachSA.Web.Controllers
 
         public async Task<IActionResult> Index(string? filtro)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            
             var (ok, data, error) = await _usuarioApi.ListarAsync(filtro);
 
             if (!ok || data == null)

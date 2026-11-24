@@ -18,5 +18,10 @@ namespace proyecto.Services
         Task<List<PagoResponseDTO>> ObtenerHistorialGeneralAsync(
             CancellationToken cancellationToken = default
         );
+
+        Task<List<PagoResponseDTO>> ObtenerHistorialPorUsuarioAsync(
+            int usuarioId,
+            CancellationToken cancellationToken = default
+        );
     }
 }

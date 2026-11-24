@@ -54,6 +54,19 @@ namespace proyecto.Services
             return Mapear(reservacion);
         }
 
+        public async Task<List<ReservacionResponseDTO>> ListarPorUsuarioAsync(int usuarioId)
+        {
+            List<Reservacion> reservaciones = await this.dbContext.Reservaciones
+                .AsNoTracking()
+                .Include(r => r.Cliente)
+                .Include(r => r.Paquete)
+                .Where(r => r.Activo && r.UsuarioId == usuarioId)
+                .OrderByDescending(r => r.Id)
+                .ToListAsync();
+
+            return reservaciones.Select(r => Mapear(r)).ToList();
+        }
+
         public async Task<ReservacionResponseDTO> CrearAsync(ReservacionDTO request, int usuarioId, CancellationToken cancellationToken = default)
         {
             // 1. Validaciones y cálculo, antes de abrir la transacción

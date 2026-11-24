@@ -26,5 +26,8 @@ namespace proyecto.Services
 
         /// <summary>Eliminación lógica: marca la reservación como inactiva.</summary>
         Task EliminarAsync(int id);
+
+        /// <summary>Lista las reservaciones activas de un usuario, las más recientes primero.</summary>
+        Task<List<ReservacionResponseDTO>> ListarPorUsuarioAsync(int usuarioId);
     }
 }

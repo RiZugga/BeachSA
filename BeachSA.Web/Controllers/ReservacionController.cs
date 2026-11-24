@@ -35,8 +35,21 @@ namespace BeachSA.Web.Controllers
 
             HttpResponseMessage responseMessage = null;
 
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var token = User.FindFirst("AccessToken")?.Value;
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                TempData["ErrorMessage"] = "No se encontró el token de autenticación.";
+                return RedirectToAction("Index", "Reservacion");
+            }
+            this.client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            
             // Consultar las reservaciones
-            responseMessage = await this.client.GetAsync("Reservas/List");
+            responseMessage = await this.client.GetAsync("Reservas/MyList");
 
             // Validación de respuesta
             if (responseMessage.IsSuccessStatusCode)

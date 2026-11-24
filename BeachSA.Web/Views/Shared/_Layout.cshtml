@@ -177,14 +177,6 @@
                             </a>
                         </li>
 
-                        <!-- CLIENTES -->
-                        <li class="nav-item">
-                            <a class="nav-link"
-                               asp-controller="Clientes"
-                               asp-action="Index">
-                                Clientes
-                            </a>
-                        </li>
 
                         <!-- PAQUETES -->
                         <li class="nav-item">
@@ -204,6 +196,8 @@
                             </a>
                         </li>
 
+                        @if (User.Identity.Name == "admin@beachsa.com")
+                        {
                         <!-- USUARIOS -->
                         <li class="nav-item">
                             <a class="nav-link"
@@ -213,6 +207,15 @@
                             </a>
                         </li>
 
+                        <!-- CLIENTES -->
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Clientes"
+                               asp-action="Index">
+                                Clientes
+                            </a>
+                        </li>
+                        
                         <!-- ROLES -->
                         <li class="nav-item">
                             <a class="nav-link"
@@ -222,7 +225,8 @@
                             </a>
                         </li>
 
-                        <!-- AUDITORÍA -->
+                        
+                            <!-- AUDITORÍA -->
                         <li class="nav-item">
                             <a class="nav-link"
                                asp-controller="Auditoria"
@@ -230,7 +234,7 @@
                                 Auditoría
                             </a>
                         </li>
-
+                        }                 
                         
                         <li class="nav-item">
                             <a class="nav-link"

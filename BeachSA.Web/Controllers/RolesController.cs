@@ -21,6 +21,11 @@ namespace BeachSA.Web.Controllers
 
         public async Task<IActionResult> Index(string? filtro)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            
             var vm = new RolesIndexViewModel
             {
                 Filtro = filtro?.Trim()

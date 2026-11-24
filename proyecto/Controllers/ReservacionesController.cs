@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 //model layer DTO
 using proyecto.Dto;
+using proyecto.Models;
 
 //services layer
 using proyecto.Services;
@@ -46,6 +48,33 @@ namespace proyecto.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+        }
+
+        [Authorize]
+        [HttpGet("MyList")]
+        public async Task<IActionResult> MyList()
+        {
+            if (User.IsInRole(RolesSistema.Administrador))
+            {
+                List<ReservacionResponseDTO> todas =
+                    await this.reservacionService.ListarAsync();
+
+                return Ok(todas);
+            }
+
+            string? usuarioClaim =
+                User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub");
+
+            if (!int.TryParse(usuarioClaim, out int usuarioId))
+            {
+                return Unauthorized("No se pudo identificar al usuario.");
+            }
+
+            List<ReservacionResponseDTO> reservacionList =
+                await this.reservacionService.ListarPorUsuarioAsync(usuarioId);
+
+            return Ok(reservacionList);
         }
 
         //Method SearchID
@@ -92,7 +121,7 @@ namespace proyecto.Controllers
                 }
 
                 //se obtiene el ID del usuario autenticado
-                string usuarioClaim =
+                string? usuarioClaim =
                     User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 //validacion del usuario
