@@ -134,7 +134,7 @@ namespace BeachSA.Web.Controllers
         // Recibir y validar los cambios realizados
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, ClienteViewModel model)
+        public async Task<IActionResult> Edit(int id, ClienteViewModel model)
         {
             // Validar los identificadores
             if (id <= 0 || id != model.Id)
@@ -148,15 +148,20 @@ namespace BeachSA.Web.Controllers
                 return View(model);
             }
 
-            // Actualización pendiente de integración con la API
-            /*
-            ModelState.AddModelError(
-                string.Empty,
-                "Los datos son válidos, pero la actualización estará disponible cuando se integre la API. Mala mía"
-            );
-            */
+            // Llamar a la API para actualizar el cliente
+            var response = await _apiClient.ActualizarClienteAsync(id, model);
 
-            return View(model);
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(
+                    string.Empty,
+                    "No se pudo actualizar el cliente."
+                );
+                return View(model);
+            }
+
+            // Regresar al listado de clientes
+            return RedirectToAction(nameof(Index));
         }
 
 
@@ -187,7 +192,7 @@ namespace BeachSA.Web.Controllers
         }
 
         // Recibir la confirmación de eliminación
-        [HttpDelete("{id}")]
+        [HttpPost]
         [ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
