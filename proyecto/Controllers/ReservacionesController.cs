@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 //model layer DTO
@@ -7,6 +6,8 @@ using proyecto.Dto;
 
 //services layer
 using proyecto.Services;
+
+
 
 namespace proyecto.Controllers
 {
@@ -17,11 +18,15 @@ namespace proyecto.Controllers
         //variable para el servicio de reservaciones
         private readonly IReservacionService reservacionService;
 
+        //variable para el servicio de correo
+        private readonly IReservacionCorreoService _correoService;
+
         //constructor por omision del controller
-        public ReservasController(IReservacionService pReservacionService)
+        public ReservasController(IReservacionService pReservacionService, IReservacionCorreoService pCorreoService)
         {
             //se instancia el servicio mediante inyeccion de dependencias
             this.reservacionService = pReservacionService;
+            _correoService = pCorreoService;
         }
 
         //Method List
@@ -234,6 +239,75 @@ namespace proyecto.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
+        //Method ConsultarPDF
+        [HttpGet("ConsultarPDF")]
+        public async Task<IActionResult> ConsultarPDF(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("El ID de la reservación no es válido.");
+                }
+
+                // Generar el PDF de la reservación
+                byte[] pdf = await _correoService.GenerarPdfAsync(id);
+
+                // Devolver el PDF para visualizarlo en el navegador
+                return File(
+                    pdf,
+                    "application/pdf",
+                    $"Reservacion_{id}.pdf"
+                );
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    mensaje = "Error al consultar el PDF.",
+                    detalle = ex.Message
+                });
+            }
+        }
+
+        //Method EnviarCorreo
+        [HttpPost("EnviarPDF")]
+        public async Task<IActionResult> EnviarPDF(int id)
+        {
+            try
+            {
+                if (id <= 0)
+                {
+                    return BadRequest("El ID no es válido.");
+                }
+
+                await _correoService.EnviarPdfAsync(id);
+
+                return Ok(new
+                {
+                    mensaje = "El PDF fue enviado correctamente."
+                });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new
+                {
+                    mensaje = "Error al enviar el correo.",
+                    detalle = ex.Message
+                });
+            }
+        }
+
 
     }//close controller
 }//close namespace

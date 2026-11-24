@@ -1,5 +1,4 @@
-﻿
-using MailKit;
+﻿using MailKit;
 using MailKit.Net.Smtp;
 using MimeKit;
 
@@ -66,6 +65,12 @@ namespace proyecto.Services
                         .FontSize(20)
                         .FontColor(Colors.Blue.Darken2);
 
+                    page.Header()
+                        .Text("Sistema de Reservaciones BeachSA")
+                        .Bold()
+                        .FontSize(16)
+                        .FontColor(Colors.Blue.Darken2);
+
                     page.Content().PaddingVertical(20).Column(column =>
                     {
                         column.Spacing(12);
@@ -121,23 +126,23 @@ namespace proyecto.Services
                             .Bold();
 
                         column.Item().Text(
-                            $"Tipo de cambio: {reservacion.TipoCambio:N4}");
+                            $"Tipo de cambio: ₡{reservacion.TipoCambio:N4}");
 
                         column.Item().Text(
                             $"Total en colones: ₡{reservacion.TotalColones:N2}")
                             .Bold();
 
                         column.Item().PaddingTop(10)
-                            .Text($"Prima: ₡{reservacion.MontoPrima:N2}");
+                            .Text($"Prima: ${reservacion.MontoPrima:N2}");
 
                         column.Item().Text(
-                            $"Saldo pendiente: ₡{reservacion.Saldo:N2}");
+                            $"Saldo pendiente: ${reservacion.Saldo:N2}");
 
                         column.Item().Text(
                             $"Cantidad de mensualidades: {reservacion.CantidadMensualidades}");
 
                         column.Item().Text(
-                            $"Monto por mensualidad: ₡{reservacion.MontoMensualidad:N2}");
+                            $"Monto por mensualidad: ${reservacion.MontoMensualidad:N2}");
 
                         column.Item().PaddingTop(20)
                             .Text(
@@ -228,7 +233,8 @@ namespace proyecto.Services
                     $"Estimado/a {reservacion.Cliente.NombreCompleto},\n\n" +
                     $"Adjuntamos el comprobante de su reservación " +
                     $"número {reservacion.Id}.\n\n" +
-                    "Gracias por confiar en nuestro servicio."
+                    "Gracias por confiar en nuestro servicio." +
+                    "BeachSA"
             };
 
             body.Attachments.Add(

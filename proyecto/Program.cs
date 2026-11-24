@@ -64,6 +64,9 @@ builder.Services.AddScoped<ITipoCambioService, TipoCambioService>();
 //Servicios de correo para reservaciones
 builder.Services.AddScoped<IReservacionCorreoService, ReservacionCorreoService>();
 
+//Servicios de pagos
+builder.Services.AddScoped<IPagoReservacionService, PagoReservacionService>();
+
 var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
 var keyBytes = Encoding.UTF8.GetBytes(key);
 
