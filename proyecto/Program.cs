@@ -1,0 +1,151 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using proyecto.Dto;
+using proyecto.Models;
+using proyecto.Services;
+using System.Text;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+builder.Services.AddHttpClient();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Pegue solo el token JWT, sin la palabra Bearer."
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+builder.Services.AddDbContext<DbContextBank>(
+    option => option.UseSqlServer(builder.Configuration.GetConnectionString("String"))
+    );
+
+builder.Services.AddScoped<IAuthorizationServices, AuthorizationServices>();
+builder.Services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IAuditoriaServices, AuditoriaServices>();
+
+//agregado por Caro
+// Servicios de reservaciones
+builder.Services.AddScoped<IReservacionService, ReservacionService>();
+
+// Servicios de precios
+builder.Services.AddScoped<IPrecioService, PrecioService>();
+
+// Servicios de tipo de cambio
+builder.Services.AddScoped<ITipoCambioService, TipoCambioService>();
+
+//Servicios de correo para reservaciones
+builder.Services.AddScoped<IReservacionCorreoService, ReservacionCorreoService>();
+
+var key = builder.Configuration.GetValue<string>("JwtSettings:Key");
+var keyBytes = Encoding.UTF8.GetBytes(key);
+
+builder.Services.AddAuthentication(config =>
+{
+    config.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+}).AddJwtBearer(config =>
+{
+    config.RequireHttpsMetadata = false;
+    config.SaveToken = true;
+    config.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters()
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+
+    config.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();   // evita la respuesta vacía por defecto
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
+            string mensaje = context.AuthenticateFailure is SecurityTokenExpiredException
+                ? "El token ha expirado. Inicie sesión nuevamente."
+                : "No autenticado. Debe enviar un token válido.";
+
+            await context.Response.WriteAsJsonAsync(new { Result = false, Msj = mensaje });
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(new { Result = false, Msj = "No tiene permisos para realizar esta acción." });
+        }
+    };
+
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    // Por defecto, todo endpoint exige JWT; el login usa [AllowAnonymous]
+    //options.FallbackPolicy = new AuthorizationPolicyBuilder()
+     //   .RequireAuthenticatedUser()
+     //   .Build();
+
+    // Una política por función: se usa con [Authorize(Policy = FuncionesSistema.Clientes)]
+    foreach (var funcion in FuncionesSistema.Todas)
+    {
+        options.AddPolicy(funcion.Codigo, policy =>
+            policy.RequireAssertion(context =>
+                FuncionesSistema.RolTieneFuncion(FuncionesSistema.ObtenerRol(context.User), funcion.Codigo)));
+    }
+});
+
+Console.WriteLine(
+    builder.Configuration.GetConnectionString("String"));
+var app = builder.Build();
+
+await DbInitializer.CrearAdministradorInicialAsync(app.Services);
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+//agregado por Caro
+//eliminar antes de subir a produccion
+app.UseAuthentication();
+app.UseAuthorization();
+//
+
+app.UseHttpsRedirection();
+
+
+app.MapControllers();
+
+app.Run();

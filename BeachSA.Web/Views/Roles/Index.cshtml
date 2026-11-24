@@ -1,0 +1,142 @@
+@model BeachSA.Web.Models.RolesIndexViewModel
+@{
+    ViewData["Title"] = "Roles y Permisos";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div>
+            <h2 class="mb-1">Roles y Permisos</h2>
+            <p class="text-muted mb-0">
+                Catálogo de funciones del sistema y permisos asignados por rol.
+            </p>
+        </div>
+        <span class="badge bg-secondary-subtle text-secondary-emphasis border">
+            Roles definidos por el sistema
+        </span>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Error))
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @Model.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    <form method="get" asp-action="Index" class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-9">
+                    <input type="text"
+                           name="filtro"
+                           value="@Model.Filtro"
+                           class="form-control"
+                           placeholder="Buscar rol por nombre o descripción (ej. Administrador, Regular)..." />
+                </div>
+                <div class="col-md-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    @if (!string.IsNullOrWhiteSpace(Model.Filtro))
+                    {
+                        <a asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+                    }
+                </div>
+            </div>
+        </div>
+    </form>
+
+    @if (Model.CatalogoFunciones.Any())
+    {
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Catálogo de funciones disponibles</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 80px;">Orden</th>
+                                <th>Código</th>
+                                <th>Nombre en menú</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var funcion in Model.CatalogoFunciones)
+                            {
+                                <tr>
+                                    <td><span class="badge bg-light text-dark border">@funcion.Orden</span></td>
+                                    <td><code>@funcion.Codigo</code></td>
+                                    <td>@funcion.Nombre</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row g-3">
+        @if (!Model.Roles.Any())
+        {
+            <div class="col-12">
+                <div class="alert alert-info mb-0">
+                    No se encontraron roles que coincidan con el filtro ingresado.
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var rol in Model.Roles)
+            {
+                var codigosRol = rol.Funciones.Select(f => f.Codigo).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-0">@rol.NombreRol</h5>
+                                <small class="text-muted">@rol.Descripcion</small>
+                            </div>
+                            <span class="badge bg-primary">@rol.Funciones.Count funciones</span>
+                        </div>
+                        <div class="card-body">
+                            <p class="small text-muted mb-2">Funciones habilitadas:</p>
+                            @if (Model.CatalogoFunciones.Any())
+                            {
+                                <div class="d-flex flex-wrap gap-2">
+                                    @foreach (var funcion in Model.CatalogoFunciones)
+                                    {
+                                        var habilitada = codigosRol.Contains(funcion.Codigo);
+                                        if (habilitada)
+                                        {
+                                            <span class="badge bg-success-subtle text-success-emphasis border border-success-subtle px-2 py-2">
+                                                ✓ @funcion.Nombre
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border px-2 py-2">
+                                                ✕ @funcion.Nombre
+                                            </span>
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var f in rol.Funciones)
+                                    {
+                                        <li class="list-group-item px-0">@f.Nombre (<code>@f.Codigo</code>)</li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>

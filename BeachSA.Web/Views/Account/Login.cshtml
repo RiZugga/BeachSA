@@ -1,0 +1,104 @@
+﻿@model BeachSA.Web.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<!-- Sección Principal del Login -->
+<section class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-8 col-lg-5">
+
+            <!-- Tarjeta del Login -->
+            <div class="card border-0 shadow-sm rounded-4">
+
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Encabezado -->
+                    <div class="text-center mb-4">
+
+                        <h2 class="fw-bold">
+                            Iniciar Sesión
+                        </h2>
+
+                        <p class="text-secondary">
+                            Bienvenido al sistema Beach S.A.
+                        </p>
+
+                    </div>
+
+                   <!-- Formulario de Inicio de Sesión -->
+                    <form asp-controller="Account" asp-action="Login" method="post">
+
+                        <!-- Validaciones Generales -->
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <!-- Nombre de Usuario -->
+                        <div class="mb-3">
+
+                            <label asp-for="Email"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Email"
+                                   class="form-control"
+                                   placeholder="Ingrese su correo electrónico"
+                                   autocomplete="username" />
+
+                            <span asp-validation-for="Email"
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="mb-4">
+
+                            <label asp-for="Password"
+                                   class="form-label">
+                            </label>
+
+                            <input asp-for="Password"
+                                   class="form-control"
+                                   placeholder="Ingrese su contraseña"
+                                   autocomplete="current-password" />
+
+                            <span asp-validation-for="Password"
+                                  class="text-danger small">
+                                  class="text-danger small">
+                            </span>
+
+                        </div>
+
+                        <!-- Botón de Inicio de Sesión -->
+                        <button type="submit"
+                                class="btn w-100 text-white py-2"
+                                style="background-color: var(--beach-turquoise);">
+                            Iniciar Sesión
+                        </button>
+
+                        <!-- Mensaje Temporal -->
+                        <p class="small text-secondary text-center mt-3 mb-0">
+                            Autenticación disponible próximamente.
+                        </p>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+
+
+@* Validaciones del formulario *@
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
