@@ -68,7 +68,7 @@ namespace BeachSA.Web.Controllers
         // Recibir y validar el formulario de registro
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(ClienteViewModel model)
+        public async Task<IActionResult> Create(ClienteViewModel model)
         {
             // Verificar las validaciones
             if (!ModelState.IsValid)
@@ -76,7 +76,15 @@ namespace BeachSA.Web.Controllers
                 return View(model);
             }
 
-            return View(model);
+            var response = await _apiClient.CrearClienteAsync(model);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError(string.Empty, "No se pudo registrar el cliente.");
+                return View(model);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
 
